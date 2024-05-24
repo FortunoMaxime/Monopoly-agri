@@ -1,20 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import 'setimmediate';
+import 'react-native-gesture-handler';
+import React ,{useEffect}from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import StartupAnimation from './StartupAnimation';
+import HomeScreen from './home';
+import Choix from './Choix';
+import Plateau from './Plateau'; 
+import Famakafakana from './famakafakana';
+import InterfaceData from './InterfaceData';
+import CalendrierProduction from './CalendrierProduction';
+import JeuBudgetFamilial from './JeuBudgetFamilial';
+import BudgetInitial from './BudgetInitial';
+import Courbe from './Courbe';
+import KilalaoTabNavigator from './kilalao-taloha'
+import { createTables } from './database';
+import {Addcol} from './database';
 
-export default function App() {
+//AppRegistry.registerComponent('main', () => CalendrierProduction);
+
+const Stack = createStackNavigator();
+
+const App = () => {
+  useEffect(() => {
+    createTables();
+    Addcol('Famokarana','VolanaNambolena','TEXT');
+    Addcol('Famokarana','VolanaNamokarana','TEXT');
+    
+   
+  }, []); 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Startup">
+        <Stack.Screen name="Startup" component={StartupAnimation} options={{ headerShown: false }} />
+        <Stack.Screen name="kilalao" component={KilalaoTabNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="home" component={HomeScreen} options={{ title: 'Accueil' }} />
+        <Stack.Screen name="Choix" component={Choix} options={{ title: 'Choix' }} />
+        <Stack.Screen name="Plateau" component={Plateau} options={{ title: 'Plateau' }} />
+        <Stack.Screen name="Famakafakana" component={Famakafakana} options={{ title: 'Famakafakana' }} />
+        <Stack.Screen name="InterfaceData" component={InterfaceData} options={{ title: 'InterfaceData' }} />
+        <Stack.Screen name="CalendrierProduction" component={CalendrierProduction} options={{ title: 'Calendrier de Production' }} />
+        <Stack.Screen name="JeuBudgetFamilial" component={JeuBudgetFamilial} options={{ title: 'Jeu Budgétaire Familial' }} />
+        <Stack.Screen name="BudgetInitial" component={BudgetInitial} options={{ title: 'Budget Initial' }} />
+        <Stack.Screen name="Courbe" component={Courbe} options={{ title: 'Courbe' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
