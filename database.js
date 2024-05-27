@@ -1,147 +1,73 @@
 import * as SQLite from 'expo-sqlite';
 
-// Ouvrir la base de données de manière synchrone
-const db = SQLite.openDatabaseSync('monopoly.db');
+// Fonction principale pour initialiser la base de données
+const initDatabase = async () => {
+  const db = await SQLite.openDatabaseAsync('monopoly.db');
+  // Ouvrir la base de données de manière asynchrone
+  // Activer les clés étrangères en utilisant une transaction
+  await db.execAsync('PRAGMA foreign_keys = ON;');
+  console.log('Foreign keys turned on');
 
-// Activer les clés étrangères en utilisant une transaction
-db.transaction((tx) => {
-  tx.executeSql('PRAGMA foreign_keys = ON;');
-}, null, () => console.log('Foreign keys turned on'));
+  // Fonction pour créer les tables
+  const createTables = async () => {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS Mpamokatra (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Anarana TEXT NOT NULL,
+        Manambady TEXT NOT NULL,
+        Toerana TEXT NOT NULL,
+        Kaomimina TEXT NOT NULL,
+        Fokotany TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS Famokarana (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Sehapihariana TEXT NOT NULL,
+        VelaranaIsa INTEGER NOT NULL,
+        VelaranaAmbolena INTEGER NOT NULL,
+        TeknikaAMpiasaina TEXT NOT NULL,
+        VokatraKg TEXT NOT NULL,
+        VolanaNambolena TEXT NOT NULL,
+        VolanaNamokarana TEXT NOT NULL,
+        MpamokatraId INTEGER,
+        FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
+      );
+      CREATE TABLE IF NOT EXISTS Fitaovampamokarana (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Fitaovampamokarana TEXT NOT NULL,
+        Isa INTEGER NOT NULL,
+        MpamokatraId INTEGER,
+        FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
+      );
+      CREATE TABLE IF NOT EXISTS ManodidinaFamokarana (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Mpisehatra TEXT NOT NULL,
+        AsaAtao TEXT NOT NULL,
+        Adiresy TEXT,
+        Tel TEXT,
+        Efahiaramiasa TEXT,
+        MpamokatraId INTEGER,
+        FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
+      );
+      CREATE TABLE IF NOT EXISTS Fanamarihana (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Fanamarihana TEXT NOT NULL,
+        MpamokatraId INTEGER,
+        FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
+      );
+    `);
+    console.log('Tables créées avec succès');
+  };
 
-
-// Fonction pour créer les tables
-const createTables = () => {
- db.transaction((tx) => {
-    // Création de la table pour le panneau 1
-    tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS Mpamokatra (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            Anarana TEXT NOT NULL,
-            Manambady TEXT NOT NULL,
-            Toerana TEXT NOT NULL,
-            Kaomimina TEXT NOT NULL,
-            Fokotany TEXT NOT NULL
-        );`,
-      [],
-      () => {
-        console.log('Table pour le panneau 1 créée avec succès');
-      },
-      (_, err) => {
-        console.log('Erreur lors de la création de la table pour le panneau 1:', err);
-      }
-    );
-
-    // Création de la table pour le panneau 2
-  // Création de la table pour le panneau 2
-tx.executeSql(
-  `CREATE TABLE IF NOT EXISTS Famokarana (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      Sehapihariana TEXT NOT NULL,
-      VelaranaIsa INTEGER NOT NULL,
-      VelaranaAmbolena INTEGER NOT NULL,
-      TeknikaAMpiasaina TEXT NOT NULL,
-      VokatraKg TEXT NOT NULL,
-      MpamokatraId INTEGER,
-      FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
-     
-  );`,
-[],
-() => {
-  console.log('Table pour le Famokarana créée avec succès');
-},
-(_, err) => {
-  console.log('Erreur lors de la création de la table pour le panneau 2:', err);
-}
-);
-
-// Création de la table pour le panneau 3
-tx.executeSql(
-  `CREATE TABLE IF NOT EXISTS Fitaovampamokarana (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      Fitaovampamokarana TEXT NOT NULL,
-      Isa INTEGER NOT NULL,
-      MpamokatraId INTEGER,
-      FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
-      
-      
-  );`,
-[],
-() => {
-  console.log('Table pour le panneau 3 créée avec succès');
-},
-(_, err) => {
-  console.log('Erreur lors de la création de la table pour le panneau 3:', err);
-}
-);
-
-// Création de la table pour le panneau 4
-tx.executeSql(
-  `CREATE TABLE IF NOT EXISTS ManodidinaFamokarana (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      Mpisehatra TEXT NOT NULL,
-      AsaAtao TEXT NOT NULL,
-      Adiresy TEXT,
-      Tel TEXT,
-      Efahiaramiasa TEXT,
-      MpamokatraId INTEGER,
-      FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
-     
-  );`,
-[],
-() => {
-  console.log('Table pour le panneau 4 créée avec succès');
-},
-(_, err) => {
-  console.log('Erreur lors de la création de la table pour le panneau 4:', err);
-}
-);
-
-// Création de la table pour le panneau 5
-tx.executeSql(
-  `CREATE TABLE IF NOT EXISTS Fanamarihana(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      Fanamarihana TEXT NOT NULL,
-      MpamokatraId INTEGER,
-      FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
-  );`,
-[],
-() => {
-  console.log('Table pour le panneau 5 créée avec succès');
-},
-(_, err) => {
-  console.log('Erreur lors de la création de la table pour le panneau 5:', err);
-}
-);
-
- });
+  // Appeler la fonction pour créer les tables
+  await createTables();
 };
 
-
-
+// Appeler la fonction principale d'initialisation de la base de données
+initDatabase().catch(error => console.error('Erreur lors de l\'initialisation de la base de données:', error));
 
 // Fonction pour enregistrer les données dans une table spécifique
 const saveDataToTable = async (tableName, data) => {
-  const keys = Object.keys(data).join(', ');
-  const values = Object.values(data);
-  const placeholders = values.map(() => '?').join(', ');
-
-  const sql = `INSERT INTO ${tableName} (${keys}) VALUES (${placeholders});`;
- 
-  try {
-    await db.transaction(tx => {
-      tx.executeSql(sql, values, () => {
-        console.log(`Données enregistrées avec succès dans la table ${tableName}`);
-      }, (_, error) => {
-        console.error(`Erreur lors de l'enregistrement des données dans la table ${tableName}:`, error);
-      });
-    });
-  } catch (error) {
-    console.error(`Erreur lors de l'enregistrement des données dans la table ${tableName}:`, error);
-  }
-};
-
-
-const saveDatakey = async (tableName, data) => {
+  const db = await SQLite.openDatabaseAsync('monopoly.db');
   const keys = Object.keys(data).join(', ');
   const values = Object.values(data);
   const placeholders = values.map(() => '?').join(', ');
@@ -149,67 +75,50 @@ const saveDatakey = async (tableName, data) => {
   const sql = `INSERT INTO ${tableName} (${keys}) VALUES (${placeholders});`;
 
   try {
-    await db.transaction(tx => {
-      tx.executeSql(sql, values, () => {
-        console.log(`Données enregistrées avec succès dans la table ${tableName}`);
-      }, (_, error) => {
-        console.error(`Erreur lors de l'enregistrement des données dans la table ${tableName}:`, error);
-      });
-    });
+    const result = await db.runAsync(sql, ...values);
+    console.log(`Données enregistrées avec succès dans la table ${tableName}`);
+    return result;
   } catch (error) {
     console.error(`Erreur lors de l'enregistrement des données dans la table ${tableName}:`, error);
   }
 };
 
-
-const Addcol = async (tableName, columnName, columnType) => {
+// Fonction pour ajouter une colonne à une table
+const addColumn = async (tableName, columnName, columnType) => {
   const sql = `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnType};`;
 
   try {
-    await db.transaction(tx => {
-      tx.executeSql(sql);
-    });
+    await db.runAsync(sql);
     console.log(`Nouvelle colonne '${columnName}' ajoutée à la table '${tableName}' avec succès.`);
   } catch (error) {
     console.error(`Erreur lors de l'ajout de la nouvelle colonne '${columnName}' à la table '${tableName}':`, error);
   }
 };
 
-const addCleetrange= async (tableName, columnName, referencedTableName, referencedColumnName) => {
+// Fonction pour ajouter une clé étrangère à une table
+const addForeignKey = async (tableName, columnName, referencedTableName, referencedColumnName) => {
   const sql = `ALTER TABLE ${tableName} ADD CONSTRAINT fk_${columnName} FOREIGN KEY (${columnName}) REFERENCES ${referencedTableName}(${referencedColumnName});`;
 
   try {
-    await db.transaction(tx => {
-      tx.executeSql(sql);
-    });
+    await db.runAsync(sql);
     console.log(`Clé étrangère '${columnName}' ajoutée à la table '${tableName}' avec succès.`);
   } catch (error) {
     console.error(`Erreur lors de l'ajout de la clé étrangère '${columnName}' à la table '${tableName}':`, error);
   }
 };
+
+// Fonction pour obtenir le dernier ID d'une table
 const getLastId = async (tableName) => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `SELECT MAX(id) AS max_id FROM ${tableName}`,
-        [],
-        (_, { rows }) => {
-          if (rows.length > 0) {
-            resolve(rows.item(0).max_id);
-          } else {
-            resolve(null); // Retourner null si aucune ligne n'est trouvée
-          }
-        },
-        (_, error) => {
-          reject(error);
-        }
-      );
-    });
-  });
+  const db = await SQLite.openDatabaseAsync('monopoly.db');
+
+  try {
+    const row = await db.getFirstAsync(`SELECT MAX(id) AS max_id FROM ${tableName}`);
+    return row ? row.max_id : null;
+  } catch (error) {
+    console.error(`Erreur lors de la récupération du dernier ID de la table ${tableName}:`, error);
+    return null;
+  }
 };
 
-
 // Exporter les fonctions pour être utilisées dans d'autres parties de l'application
-export {  createTables, saveDataToTable ,Addcol,getLastId,saveDatakey};
-
-
+export { saveDataToTable, addColumn, addForeignKey, getLastId };

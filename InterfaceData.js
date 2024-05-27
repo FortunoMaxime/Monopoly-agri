@@ -5,115 +5,83 @@ import * as SQLite from 'expo-sqlite';
 import { useRoute } from '@react-navigation/native';
 
 
-const db = SQLite.openDatabase('monopoly.db');
-
-const MonComposant = () => {
+const MonComposant =async () => {
   const route = useRoute();
   const { itemId } = route.params;
+  const db = await SQLite.openDatabaseAsync('monopoly.db'); // Utilisez le hook useDatabase pour accéder à la base de données
+
   const [people, setPeople] = useState([]);
   const [Famokarana, setFamokarana] = useState([]);
   const [Fitaovana, setFitaovana] = useState([]);
   const [Manodidina, setManodidina] = useState([]);
   const [Fanamarihana, setFanamarihana] = useState([]);
-
   const [isModalVisible, setIsModalVisible] = useState(false);
-  // Fonction pour fermer le modal
+
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
 
-  // Fonction pour ouvrir le modal
- const openModal = () => {
-  
-  setIsModalVisible(true);
-};
-
-
+  const openModal = () => {
+    setIsModalVisible(true);
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      await recupereDonnees(itemId);
-      await recupereFamokarana(itemId);
-      await recupereFitaovampamokarana(itemId);
-      await recupereManodidina(itemId);
-      await recupereFanamarihana(itemId);
-    }
     fetchData();
   }, [itemId]);
 
-  async function recupereDonnees(id) {
-   
+  const fetchData = async () => {
+    await recupereDonnees(itemId);
+    await recupereFamokarana(itemId);
+    await recupereFitaovampamokarana(itemId);
+    await recupereManodidina(itemId);
+    await recupereFanamarihana(itemId);
+  };
+
+  const recupereDonnees = async (id) => {
     try {
-      
-      const result = await db.transactionAsync(async tx => {
-        const result = await tx.executeSqlAsync('SELECT * FROM Mpamokatra WHERE id =?', [id]);
-        console.log(result.rows);
-        setPeople(result.rows);
-      }, false);
+      const result = await db.executeSqlAsync('SELECT * FROM Mpamokatra WHERE id = ?', [id]);
+      setPeople(result.rows._array);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
-  }
-  async function recupereFamokarana(id) {
+  };
+
+  const recupereFamokarana = async (id) => {
     try {
-      const result = await db.transactionAsync(async tx => {
-        // Utilisez la clause WHERE pour filtrer les données par ID
-        const result = await tx.executeSqlAsync('SELECT * FROM Famokarana WHERE MpamokatraId=?', [id]);
-        console.log('Données récupérées:', result.rows);
-        // Mettre à jour l'état avec les données récupérées
-        setFamokarana(result.rows);
-        
-        
-      }, false);
+      const result = await db.executeSqlAsync('SELECT * FROM Famokarana WHERE MpamokatraId = ?', [id]);
+      setFamokarana(result.rows._array);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
-  }
-  async function recupereFitaovampamokarana(id) {
+  };
+
+  const recupereFitaovampamokarana = async (id) => {
     try {
-      const result = await db.transactionAsync(async tx => {
-        // Utilisez la clause WHERE pour filtrer les données par ID
-        const result = await tx.executeSqlAsync('SELECT * FROM Fitaovampamokarana WHERE MpamokatraId=?', [id]);
-        console.log('Données récupérées:', result.rows);
-        // Mettre à jour l'état avec les données récupérées
-        setFitaovana(result.rows);
-        
-        
-      }, false);
+      const result = await db.executeSqlAsync('SELECT * FROM Fitaovampamokarana WHERE MpamokatraId = ?', [id]);
+      setFitaovana(result.rows._array);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
-  }
-  async function recupereManodidina(id) {
+  };
+
+  const recupereManodidina = async (id) => {
     try {
-      const result = await db.transactionAsync(async tx => {
-        // Utilisez la clause WHERE pour filtrer les données par ID
-        const result = await tx.executeSqlAsync('SELECT * FROM ManodidinaFamokarana WHERE MpamokatraId=?', [id]);
-        console.log('Données récupérées:', result.rows);
-        // Mettre à jour l'état avec les données récupérées
-        setManodidina(result.rows);
-        
-        
-      }, false);
+      const result = await db.executeSqlAsync('SELECT * FROM ManodidinaFamokarana WHERE MpamokatraId = ?', [id]);
+      setManodidina(result.rows._array);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
-  }
-  async function recupereFanamarihana(id) {
+  };
+
+  const recupereFanamarihana = async (id) => {
     try {
-      const result = await db.transactionAsync(async tx => {
-        // Utilisez la clause WHERE pour filtrer les données par ID
-        const result = await tx.executeSqlAsync('SELECT * FROM Fanamarihana WHERE MpamokatraId=?', [id]);
-        console.log('Données récupérées:', result.rows);
-        // Mettre à jour l'état avec les données récupérées
-        setFanamarihana(result.rows);
-        
-        
-      }, false);
+      const result = await db.executeSqlAsync('SELECT * FROM Fanamarihana WHERE MpamokatraId = ?', [id]);
+      setFanamarihana(result.rows._array);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
-  }
+  };
+
   const transposeTable = (table) => {
     const transposedTable = [];
     const headers = Object.keys(table?.[0]?? {});

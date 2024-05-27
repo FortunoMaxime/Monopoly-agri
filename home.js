@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
@@ -7,31 +7,30 @@ import Famakafakana from './famakafakana';
 import { useNavigation } from '@react-navigation/native'; 
 import * as SQLite from 'expo-sqlite';
 
-const db = SQLite.openDatabase('monopoly.db');
-
-const windowWidth = Dimensions.get('window').width;
-
 const HomeScreen = () => {
   const navigation = useNavigation(); 
-  const listTitleFontSize = windowWidth * 0.03; 
+  const listTitleFontSize = Dimensions.get('window').width * 0.03; 
 
   const [people, setPeople] = useState([]);
-  const [id, setId] = useState([]);
- async function recupereDonnees() {
+  const [id, setId] = useState('');
+
+
+  async function recupereDonnees() {
     try {
-      const result = await db.transactionAsync(async tx => {
-        const result = await tx.executeSqlAsync('SELECT id, Anarana FROM Mpamokatra');
-        console.log('Données récupérées:', result.rows);
-        setPeople(result.rows);
-        console.log('Données mises à jour:', people);
-        
-      }, false);
+      const db = await SQLite.openDatabaseAsync('monopoly.db');
+      if (!db) {
+        throw new Error('Impossible d\'ouvrir la base de données');
+      }
+      const rows  = await db.getAllAsync('SELECT id, Anarana FROM Mpamokatra');
+      setPeople(rows);
+      
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
   }
+  
+  
 
-  // Appeler la fonction pour récupérer les données lorsque le composant est monté
   useEffect(() => {
     recupereDonnees();
   }, []);
@@ -39,9 +38,6 @@ const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false); // State pour la visibilité du modal
 
-  const filteredPeople = people.filter(person =>
-    person.name && person.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.item} onPress={() => handleOpenModal(item.id)}>
@@ -62,7 +58,6 @@ const HomeScreen = () => {
     }
   };
   
-
   const handleCloseModal = () => {
     setModalVisible(false); // Cacher le modal
   };
@@ -84,7 +79,6 @@ const HomeScreen = () => {
     console.log("Navigating to Kilalao screen with item ID:", id);
   };
   
-
   const handleNewAction = () => {
     navigation.navigate('Famakafakana');
     // Implémentez la logique pour une nouvelle action
@@ -114,13 +108,11 @@ const HomeScreen = () => {
               <Ionicons name="time-outline" size={24} style={styles.buttonIcon} />
               <Text style={styles.modalButtonText}>Kilalao taloha</Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </Modal>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Kilalaom-pitanatanana</Text>
-        {/* L'icône du bouton profil a été enlevée */}
       </View>
       <View style={styles.searchContainer}>
         <TextInput

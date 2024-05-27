@@ -14,21 +14,10 @@ import JeuBudgetFamilial from './JeuBudgetFamilial';
 import BudgetInitial from './BudgetInitial';
 import Courbe from './Courbe';
 import KilalaoTabNavigator from './kilalao-taloha'
-import { createTables } from './database';
-import {Addcol} from './database';
-
-//AppRegistry.registerComponent('main', () => CalendrierProduction);
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  useEffect(() => {
-    createTables();
-    Addcol('Famokarana','VolanaNambolena','TEXT');
-    Addcol('Famokarana','VolanaNamokarana','TEXT');
-    
-   
-  }, []); 
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Startup">
