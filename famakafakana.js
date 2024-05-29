@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView ,Alert} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native';
-import { saveDataToTable,getLastId ,saveDatakey} from './database';
-
+import { saveDataToTable, getLastId, saveDataKey } from './database';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 let lastId;
 getLastId('Mpamokatra').then(id => {
@@ -45,9 +46,24 @@ const [adiresy, setAdiresy] = useState('');
 const [tel, setTel] = useState('');
 const [efaHiaraMiasa, setEfaHiaraMiasa] = useState('');
 
+const [image, setImage] = useState(null); // Déplacez cette ligne ici
 
-  
 
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+    console.log(result);
+    if (!result.canceled) {
+      const base64Image =result.assets[0].uri
+      setImage(base64Image);
+    }
+  };
   //Maka valeur ana champs de texte
 
   const handleSubmitPanel1 = () => {
@@ -57,6 +73,7 @@ const [efaHiaraMiasa, setEfaHiaraMiasa] = useState('');
        Toerana: toerana,
        Kaomimina: kaominina,
        Fokotany: fokotany,
+       ImageBase64:image,
     };
    
     saveDataToTable('Mpamokatra', data);
@@ -77,7 +94,7 @@ const handleSubmitPanel2 = () => {
     MpamokatraId:lastId,
  };
 
- saveDatakey('Famokarana', data);
+ saveDataKey('Famokarana', data);
 
 };
 
@@ -88,7 +105,7 @@ const handleSubmitPanel3 = () => {
   Isa: isa,
   MpamokatraId:lastId,
   };
-  saveDatakey('Fitaovampamokarana',data);
+  saveDataKey('Fitaovampamokarana',data);
  };
  
 
@@ -103,7 +120,7 @@ const handleSubmitPanel3 = () => {
     MpamokatraId:lastId,
  };
 
- saveDatakey('ManodidinaFamokarana', data);
+ saveDataKey('ManodidinaFamokarana', data);
 
 };
 
@@ -113,7 +130,7 @@ const handleSubmitPanel3 = () => {
     Fanamarihana:text,
     MpamokatraId:lastId,
   };
-  saveDatakey('Fanamarihana',data);
+  saveDataKey('Fanamarihana',data);
 };
  
 
@@ -152,6 +169,11 @@ const handleSubmitPanel3 = () => {
       {panel1Visible && (
   <View style={styles.panel}>
     <View style={styles.inter}>
+    <TouchableOpacity style={[styles.floatingButton]} onPress={pickImage}>
+    <Ionicons name="person-circle-outline" size={100} color="#68B684" />
+    {image && <Image source={{ uri: image }} style={styles.floatingButton} />}
+    </TouchableOpacity>
+    <View style={styles.iner}>
     <Text style={styles.label}>Anarana sy fanampiny:</Text>
       
       <TextInput
@@ -187,6 +209,7 @@ const handleSubmitPanel3 = () => {
             <Text style={styles.submitButtonText}>Raiketina</Text>
           </TouchableOpacity>
       </View>
+    </View>
     </View>
 )}
 
@@ -396,8 +419,12 @@ const styles = {
     padding: 70,
     borderWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 10,
+    marginBottom: 0,
     borderRadius: 5,
+  },
+  iner: {
+    marginTop: 200,
+    
   },
   heading: {
     fontSize: 24,
@@ -413,6 +440,11 @@ const styles = {
     marginBottom: 10,
     fontSize: 16,
     color: '#333333',
+    
+  },
+  image: {
+    width: 200,
+    height: 200,
   },
   input: {
     width: '100%',
@@ -448,6 +480,27 @@ const styles = {
     fontSize: 16,
     fontWeight: 'bold',
   },
+  floatingButton: {
+    position: 'absolute', // Permet de positionner le bouton par rapport à son conteneur parent
+   top: 30, // Positionne le bouton du haut
+    left: '45%',  // Positionne le bouton à gauche
+    right: null, // Ne positionne pas le bouton à droite (null signifie que la propriété n'est pas appliquée)
+    backgroundColor: '#004300',
+    borderRadius: 100,
+    width: 200,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  
 };
 
   export default Famakafakana;

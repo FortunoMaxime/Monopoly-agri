@@ -1,55 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Modal,StyleSheet } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, Modal, StyleSheet ,Image,ScrollView} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
 import { useRoute } from '@react-navigation/native';
 
-
-const MonComposant =async () => {
+const MonComposant = () => {
   const route = useRoute();
   const { itemId } = route.params;
-  const db = await SQLite.openDatabaseAsync('monopoly.db'); // Utilisez le hook useDatabase pour accéder à la base de données
 
+  const [db, setDb] = useState(null); // Initialisation de la base de données
   const [people, setPeople] = useState([]);
+  const [sary, setsary] = useState([]);
   const [Famokarana, setFamokarana] = useState([]);
   const [Fitaovana, setFitaovana] = useState([]);
   const [Manodidina, setManodidina] = useState([]);
   const [Fanamarihana, setFanamarihana] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const openModal = () => {
-    setIsModalVisible(true);
-  };
+  const [isModalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    fetchData();
-  }, [itemId]);
+    const initializeDB = async () => {
+      const db = await SQLite.openDatabaseAsync('monopoly.db');
+      setDb(db);
+    };
+    initializeDB();
+  }, []);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    if (db) {
+      fetchData();
+    }
+  }, [db]);
+
+  const fetchData = useCallback(async () => {
     await recupereDonnees(itemId);
+    await recupereSary(itemId);
     await recupereFamokarana(itemId);
     await recupereFitaovampamokarana(itemId);
     await recupereManodidina(itemId);
     await recupereFanamarihana(itemId);
+  }, [itemId, db]);
+
+  const handleCloseModal = () => {
+    setModalVisible(false); // Cacher le modal
+  };
+  const openModal = (itemId) => {
+    if (!isModalVisible) {
+      setModalVisible(true);
+    }
   };
 
   const recupereDonnees = async (id) => {
     try {
-      const result = await db.executeSqlAsync('SELECT * FROM Mpamokatra WHERE id = ?', [id]);
-      setPeople(result.rows._array);
+      const result = await db.getAllAsync(`SELECT id,Anarana,Manambady,Toerana,Kaomimina,Fokotany FROM Mpamokatra WHERE id =?`, [id]);
+      setPeople(result);
+      console.log(result)
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
   };
+  const recupereSary = async (id) => {
+    try {
 
+      const result = await db.getAllAsync(`SELECT ImageBase64 FROM Mpamokatra WHERE id =?`, [id]);
+      setsary(result[0].ImageBase64 );
+      console.log(result[0].ImageBase64);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+    }
+  };
   const recupereFamokarana = async (id) => {
     try {
-      const result = await db.executeSqlAsync('SELECT * FROM Famokarana WHERE MpamokatraId = ?', [id]);
-      setFamokarana(result.rows._array);
+      const result = await db.getAllAsync('SELECT * FROM Famokarana WHERE MpamokatraId = ?', [id]);
+      setFamokarana(result);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
@@ -57,8 +79,8 @@ const MonComposant =async () => {
 
   const recupereFitaovampamokarana = async (id) => {
     try {
-      const result = await db.executeSqlAsync('SELECT * FROM Fitaovampamokarana WHERE MpamokatraId = ?', [id]);
-      setFitaovana(result.rows._array);
+      const result = await db.getAllAsync('SELECT * FROM Fitaovampamokarana WHERE MpamokatraId = ?', [id]);
+      setFitaovana(result);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
@@ -66,8 +88,8 @@ const MonComposant =async () => {
 
   const recupereManodidina = async (id) => {
     try {
-      const result = await db.executeSqlAsync('SELECT * FROM ManodidinaFamokarana WHERE MpamokatraId = ?', [id]);
-      setManodidina(result.rows._array);
+      const result = await db.getAllAsync('SELECT * FROM ManodidinaFamokarana WHERE MpamokatraId = ?', [id]);
+      setManodidina(result);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
@@ -75,8 +97,8 @@ const MonComposant =async () => {
 
   const recupereFanamarihana = async (id) => {
     try {
-      const result = await db.executeSqlAsync('SELECT * FROM Fanamarihana WHERE MpamokatraId = ?', [id]);
-      setFanamarihana(result.rows._array);
+      const result = await db.getAllAsync('SELECT * FROM Fanamarihana WHERE MpamokatraId = ?', [id]);
+      setFanamarihana(result);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
@@ -86,7 +108,7 @@ const MonComposant =async () => {
     const transposedTable = [];
     const headers = Object.keys(table?.[0]?? {});
 
-    for (let i = 1; i < headers.length; i++) {
+    for (let i = 1; i < headers.length-1; i++) {
       const column = headers[i];
       const transposedRow = { column };
 
@@ -94,7 +116,23 @@ const MonComposant =async () => {
         const row = table[j];
         transposedRow[`row${j + 1}`] = row?.[column]?? '';
       }
+      transposedTable.push(transposedRow);
+    }
 
+    return transposedTable;
+  };
+  const transposeMpamokatra = (table) => {
+    const transposedTable = [];
+    const headers = Object.keys(table?.[0]?? {});
+
+    for (let i = 1; i < headers.length-1; i++) {
+      const column = headers[i];
+      const transposedRow = { column };
+
+      for (let j = 0; j < table?.length?? 0; j++) {
+        const row = table[j];
+        transposedRow[`row${j + 1}`] = row?.[column]?? '';
+      }
       transposedTable.push(transposedRow);
     }
 
@@ -106,8 +144,6 @@ const MonComposant =async () => {
   const transposedfitaovana= transposeTable(Fitaovana);
   const transposedManodidina= transposeTable(Manodidina);
   const transposedfFanamarihana= transposeTable(Fanamarihana);
-  
-  
 
   return (
     <View style={styles.container}>
@@ -128,21 +164,33 @@ const MonComposant =async () => {
           </View>
         </View>
       </Modal>
+      <ScrollView>
        <View style={styles.space} />
       <Text style={styles.title}>Mpamokatra:</Text>
-      <View style={styles.table}>
+      <View style={styles.mpamokatra}>
+      <View style={styles.imageP}>
+      {sary && (
+        <Image
+        source={{ uri: `${sary}` }}style={styles.floatingButton}
+        />
+      )}
+       </View>
+      <View style={styles.tableP}>
         {transposedpeople.map((row, index) => (
-          <View style={styles.tableRow} key={index}>
-            <Text style={styles.columnHeader}>{row.column}</Text>
+          <View style={styles.tableRowP} key={index}>
+          <Text style={styles.columnHeaderMpamokatra}>{row.column}</Text>
+
             {Object.values(row)
              .slice(1)
              .map((value, index) => (
+              
               <TouchableOpacity key={index} onPress={() => openModal()}>
               <Text style={styles.tableCell}>{value}</Text>
             </TouchableOpacity>
               ))}
           </View>
         ))}
+      </View>
       </View>
       <View style={styles.space} />
       <Text style={styles.title}>Famokarana:</Text>
@@ -182,7 +230,7 @@ const MonComposant =async () => {
       <View style={styles.table}>
         {transposedManodidina.map((row, index) => (
           <View style={styles.tableRow} key={index}>
-            <Text style={styles.columnHeader}>{row.column}</Text>
+            <Text style={styles.columnHeader}> dlkgdgldk{/*row.column*/}</Text>
             {Object.values(row)
              .slice(1)
              .map((value, index) => (
@@ -209,6 +257,7 @@ const MonComposant =async () => {
           </View>
         ))}
       </View>
+      </ScrollView>
     </View>
     
   );
@@ -234,11 +283,51 @@ const styles = StyleSheet.create({
     borderRadius: 3, 
     overflow: 'hidden',
   },
+  mpamokatra: {
+    height:'37%',
+   flexDirection : 'row',
+   backgroundColor: 'rgba(0,0,0,0.06)',
+   borderRadius: 10,
+   margin: 10,
+   padding: 40,
+   shadowColor: '#000',
+   shadowOffset: { width: 0, height: 2 },
+   shadowOpacity: 0.2,
+   shadowRadius: 2,
+   elevation: 5,
+  },
+  imageP: {
+    width: '30%',
+    marginRight:20,
+  },
+  tableP: {
+    paddingLeft:'1%',
+    flexDirection: 'column',
+    width:'70%',
+    borderWidth: 0.5, 
+    borderColor: '#007bff', 
+    borderRadius: 3, 
+    overflow: 'hidden',
+    
+  },
   tableRow: {
     flexDirection: 'column',
     flex: 1,
-    borderTopWidth: 0.5, 
     borderTopColor: '#dddddd', 
+  
+    borderTopWidth: 0.5, 
+  },  
+  tableRowP: {
+    flexDirection: 'row',
+    flex: 1,
+    borderTopColor: '#dddddd', 
+    marginLeft:'5%',
+    borderTopWidth: 0.5, 
+  }, 
+
+  
+  columnHeaderMpamokatra: {
+    width:'30%',
   },
   columnHeader: {
     backgroundColor: '#f9f9f9',
@@ -297,7 +386,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-  }
+  },
+  floatingButton: {    
+    borderRadius: 90,
+    width: '90%',
+    height: '100%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+ 
 });
 
 

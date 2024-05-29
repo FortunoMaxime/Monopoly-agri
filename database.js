@@ -17,7 +17,8 @@ const initDatabase = async () => {
         Manambady TEXT NOT NULL,
         Toerana TEXT NOT NULL,
         Kaomimina TEXT NOT NULL,
-        Fokotany TEXT NOT NULL
+        Fokotany TEXT NOT NULL,
+        ImageBase64 TEXT NOT NULL
       );
       CREATE TABLE IF NOT EXISTS Famokarana (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,6 +84,25 @@ const saveDataToTable = async (tableName, data) => {
   }
 };
 
+const saveDataKey = async (tableName, data) => {
+  const db = await SQLite.openDatabaseAsync('monopoly.db');
+
+  const keys = Object.keys(data).join(', ');
+  const values = Object.values(data);
+  const placeholders = values.map(() => '?').join(', ');
+
+  const sql = `INSERT INTO ${tableName} (${keys}) VALUES (${placeholders});`;
+
+  try {
+    const result = await db.runAsync(sql, ...values);
+    console.log(`Données enregistrées avec succès dans la table ${tableName}`);
+    return result;
+  } catch (error) {
+    console.error(`Erreur lors de l'enregistrement des données dans la table ${tableName}:`, error);
+  }
+};
+
+
 // Fonction pour ajouter une colonne à une table
 const addColumn = async (tableName, columnName, columnType) => {
   const sql = `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnType};`;
@@ -121,4 +141,4 @@ const getLastId = async (tableName) => {
 };
 
 // Exporter les fonctions pour être utilisées dans d'autres parties de l'application
-export { saveDataToTable, addColumn, addForeignKey, getLastId };
+export { saveDataToTable, addColumn, addForeignKey, getLastId,saveDataKey };

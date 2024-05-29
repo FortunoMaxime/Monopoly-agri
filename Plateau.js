@@ -1,13 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, PanResponder, Text, TouchableOpacity, Modal, TextInput, Button, FlatList} from 'react-native';
+import { View, StyleSheet, PanResponder, Text, TouchableOpacity, Modal, TextInput, Button, FlatList, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 
-const Plateau = () => {
-  const [rotationAngle, setRotationAngle] = useState(0);
-  const [previousMoveX, setPreviousMoveX] = useState(null);
-  const [previousMoveY, setPreviousMoveY] = useState(null);
+const { width, height } = Dimensions.get('window');
 
+const Plateau = () => {
   const [charges, setCharges] = useState([]);
   const [gains, setGains] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -16,34 +14,9 @@ const Plateau = () => {
   const [description, setDescription] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('attach-money');
   const [editingItemId, setEditingItemId] = useState(null);
+  const [activeMonth, setActiveMonth] = useState(new Date().getMonth());
 
-  const outerCircleRef = useRef(null);
-
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: (evt, gestureState) => {
-      const { moveX, moveY, dx, dy } = gestureState;
-      if (previousMoveX !== null && previousMoveY !== null) {
-        const angle = rotationAngle + calculateAngleChange(dx, dy);
-        setRotationAngle(angle);
-      }
-      setPreviousMoveX(moveX);
-      setPreviousMoveY(moveY);
-    },
-    onPanResponderRelease: () => {
-      setPreviousMoveX(null);
-      setPreviousMoveY(null);
-    },
-  });
-
-  const calculateAngleChange = (dx, dy) => {
-    const radius = 150; // Fixed radius
-    const circumference = 2 * Math.PI * radius;
-    const angleChange = (180 * (dx + dy) / circumference) % 360;
-    return angleChange;
-  };
-
-  const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jui", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+  const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
   const handleAddOrEditItem = () => {
     if (amount && description) {
@@ -110,9 +83,7 @@ const Plateau = () => {
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-        <MaterialIcons name="agriculture" size={30} color="white" />
-        <MaterialIcons name="grass" size={30} color="white" />
-        <MaterialIcons name="park" size={30} color="white" />
+        <Text style={styles.topBarText}>{months[activeMonth]}</Text>
       </View>
       <View style={styles.upperContainer}>
         <View style={styles.upperSection}>
@@ -151,34 +122,64 @@ const Plateau = () => {
       <View style={styles.totalContainer}>
         <Text style={styles.totalText}>Budget du Mois: {gains.reduce((total, item) => total + parseFloat(item.amount), 0) - charges.reduce((total, item) => total + parseFloat(item.amount), 0)} Ariary</Text>
       </View>
-      <View style={styles.plateauContainer}>
-        <TouchableOpacity style={styles.arrowButton}>
-          <MaterialIcons name="navigate-before" size={30} color="black" />
-          <Text>Précédent</Text>
-        </TouchableOpacity>
-        <View
-          style={[styles.outerCircle, { transform: [{ rotate: `${rotationAngle}deg` }] }]}
-          ref={outerCircleRef}
-          {...panResponder.panHandlers}
-        >
-          {Array.from({ length: 12 }).map((_, index) => (
-            <View
+      <View style={styles.monthsContainer}>
+        <View style={styles.sideContainerTop}>
+          {["Janvier", "Février", "Mars", "Avril"].map((month, index) => (
+            <TouchableOpacity
               key={index}
-              style={[
-                styles.circle,
-                { transform: [{ rotate: `${index * (360 / 12)}deg` }, { translateX: 130 }] }
-              ]}
+              style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth]}
+              onPress={() => setActiveMonth(months.indexOf(month))}
             >
-              <Text style={[styles.monthText, { transform: [{ rotate: `${-rotationAngle}deg` }] }]}>{months[index]}</Text>
-            </View>
+              <Text style={styles.monthText}>{month}</Text>
+              {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
+            </TouchableOpacity>
           ))}
         </View>
-        <TouchableOpacity style={styles.arrowButton}>
-          <MaterialIcons name="navigate-next" size={30} color="black" />
-          <Text>Suivant</Text>
-        </TouchableOpacity>
-        <View style={styles.indicatorContainer}>
-          <MaterialIcons name="arrow-drop-up" size={60} color="black" style={styles.indicator} />
+        <View style={styles.middleContainer}>
+          <View style={styles.sideContainerLeft}>
+            {["Décembre", "Novembre"].map((month, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth]}
+                onPress={() => setActiveMonth(months.indexOf(month))}
+              >
+                <Text style={styles.monthText}>{month}</Text>
+                {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
+              </TouchableOpacity>
+            ))}
+          </View>
+          <View style={styles.diceContainer}>
+            <TouchableOpacity onPress={() => setActiveMonth(Math.floor(Math.random() * 12))}>
+              <MaterialIcons name="casino" size={width/15} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setActiveMonth(Math.floor(Math.random() * 12))}>
+              <MaterialIcons name="casino" size={width/15} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.sideContainerRight}>
+            {["Mai", "Juin"].map((month, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth]}
+                onPress={() => setActiveMonth(months.indexOf(month))}
+              >
+                <Text style={styles.monthText}>{month}</Text>
+                {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+        <View style={styles.sideContainerBottom}>
+          {["Octobre", "Septembre", "Août", "Juillet"].map((month, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth]}
+              onPress={() => setActiveMonth(months.indexOf(month))}
+            >
+              <Text style={styles.monthText}>{month}</Text>
+              {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
       <Modal
@@ -212,197 +213,214 @@ const Plateau = () => {
               <Picker.Item label="Family" value="family-restroom" />
               <Picker.Item label="Pig" value="pets" />
               {/* Add more icons as needed */}
-              </Picker>
-              <Button title="Ajouter" onPress={handleAddOrEditItem} />
-            </View>
+            </Picker>
+            <Button title="Ajouter" onPress={handleAddOrEditItem} />
           </View>
-        </Modal>
-      </View>
-    );
-  };
+        </View>
+      </Modal>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-container: {
-flex: 1,
-backgroundColor: '#F7F9FC',
-},
-topBar: {
-flexDirection: 'row',
-justifyContent: 'space-around',
-padding: 10,
-backgroundColor: '#34A853',
-},
-upperContainer: {
-flexDirection: 'row',
-justifyContent: 'space-between',
-paddingHorizontal: 20,
-paddingTop: 20,
-height: '36%',
-},
-upperSection: {
-flex: 1,
-backgroundColor: '#FFFFFF',
-borderRadius: 10,
-margin: 10,
-padding: 20,
-shadowColor: '#000',
-shadowOffset: { width: 0, height: 2 },
-shadowOpacity: 0.2,
-shadowRadius: 2,
-elevation: 5,
-},
-upperText: {
-fontSize: 18,
-fontWeight: 'bold',
-color: '#333333',
-marginBottom: 10,
-},
-floatingButton: {
-position: 'absolute',
-bottom: 10,
-right: 10,
-backgroundColor: '#34A853',
-width: 50,
-height: 50,
-borderRadius: 25,
-justifyContent: 'center',
-alignItems: 'center',
-shadowColor: '#000',
-shadowOffset: { width: 0, height: 2 },
-shadowOpacity: 0.2,
-shadowRadius: 2,
-elevation: 5,
-},
-bottomText: {
-fontSize: 16,
-color: '#666666',
-margin: 20,
-position: 'absolute',
-bottom: 0,
-backgroundColor: '#FFFFFF',
-},
-itemText: {
-fontSize: 16,
-color: '#666666',
-marginTop: 10,
-marginLeft: 10,
-},
-totalContainer: {
-backgroundColor: '#FFFFFF',
-padding: 20,
-marginHorizontal: 30,
-borderRadius: 10,
-alignItems: 'center',
-shadowColor: '#000',
-shadowOffset: { width: 0, height: 2 },
-shadowOpacity: 0.2,
-shadowRadius: 2,
-elevation: 5,
-margin: 20,
-},
-totalText: {
-fontSize: 18,
-fontWeight: 'bold',
-color: '#333333',
-},
-plateauContainer: {
-height: '50%', // Occupy half of the screen height
-width: '100%', // Occupy full width
-position: 'absolute',
-bottom: 0, // Align to the bottom of the screen
-flexDirection: 'row',
-justifyContent: 'center',
-alignItems: 'center',
-paddingVertical: 20,
-backgroundColor: '#F7F9FC', // Match background color for seamless look
-borderStyle: 'solid',
-borderWidth: 1,
-borderColor: 'green',
-},
-outerCircle: {
-width: 300,
-height: 300,
-borderRadius: 150,
-borderWidth: 1,
-borderColor: '#CCCCCC',
-backgroundColor: '#FFFFFF',
-justifyContent: 'center',
-alignItems: 'center',
-position: 'relative',
-},
-circle: {
-position: 'absolute',
-width: 40,
-height: 40,
-borderRadius: 20,
-backgroundColor: '#34A853',
-justifyContent: 'center',
-alignItems: 'center',
-},
-monthText: {
-color: '#FFFFFF',
-fontSize: 12,
-},
-indicatorContainer: {
-position: 'absolute',
-alignSelf: 'center',
-top: 10,
-},
-indicator: {
-transform: [{ rotate: '180deg' }],
-},
-arrowButton: {
-padding: 20,
-alignItems: 'center',
-},
-bottomBar: {
-padding: 20,
-backgroundColor: '#34A853',
-alignItems: 'center',
-},
-bottomBarText: {
-fontSize: 16,
-color: '#FFFFFF',
-fontWeight: 'bold',
-},
-modalContainer: {
-flex: 1,
-justifyContent: 'center',
-alignItems: 'center',
-backgroundColor: 'rgba(0, 0, 0, 0.5)',
-},
-modalContent: {
-backgroundColor: '#FFFFFF',
-padding: 20,
-borderRadius: 10,
-width: '80%',
-alignItems: 'center',
-},
-modalTitle: {
-fontSize: 18,
-fontWeight: 'bold',
-marginBottom: 20,
-},
-input: {
-width: '100%',
-borderBottomWidth: 1,
-marginBottom: 20,
-padding: 5,
-fontSize: 16,
-},
-list: {
-flex: 1,
-},
-listItem: {
-flexDirection: 'row',
-alignItems: 'center',
-justifyContent: 'space-between',
-marginBottom: 10,
-paddingHorizontal: 10,
-borderBottomWidth: 1,
-borderBottomColor: '#CCCCCC',
-},
+  container: {
+    flex: 1,
+    backgroundColor: '#F7F9FC',
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#34A853',
+  },
+  topBarText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  upperContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    height: height * 0.35,
+  },
+  upperSection: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    margin: 5,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  upperText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333333',
+    marginBottom: 10,
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: '#34A853',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  bottomText: {
+    fontSize: 14,
+    color: '#666666',
+    margin: 10,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
+  },
+  itemText: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: 5,
+    marginLeft: 5,
+  },
+  totalContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    marginHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 5,
+    marginVertical: 10,
+  },
+  totalText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  monthsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#fff',
+    height: height * 0.45,
+  },
+  sideContainerLeft: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  sideContainerRight: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    borderColor: 'green',
+    marginLeft: 'auto',
+    marginRight : width/100,
+  },
+  sideContainerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+    width: '100%',
+  },
+  sideContainerBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+    width: '100%',
+    borderColor: 'blue',
+    margin: 'auto',
+  },
+  middleContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    marginHorizontal: width/200,
+  },
+  diceContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#34A853',
+    height: width * 0.15,
+    width: width * 0.15,
+    marginVertical: 'auto',
+    marginHorizontal: width / 5,
+    borderRadius: 10,
+  },
+  monthItem: {
+    width: width * 0.22,
+    height: width * 0.12,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#825391',
+    margin: 5,
+    borderRadius: 5,
+    marginVertical: height/150,
+  },
+  monthText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+  activeMonth: {
+    backgroundColor: '#4E9F3D',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    borderBottomWidth: 1,
+    marginBottom: 20,
+    padding: 5,
+    fontSize: 16,
+  },
+  list: {
+    flex: 1,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#CCCCCC',
+  },
 });
 
 export default Plateau;
-
