@@ -4,9 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
 import Choix from './Choix'; 
 import Famakafakana from './famakafakana'; 
+import ExcelReader from './excel'; 
 import { useNavigation } from '@react-navigation/native'; 
 import * as SQLite from 'expo-sqlite';
 
+const { width, height } = Dimensions.get('window');
 const HomeScreen = () => {
   const navigation = useNavigation(); 
   const listTitleFontSize = Dimensions.get('window').width * 0.03; 
@@ -78,7 +80,11 @@ const HomeScreen = () => {
     setModalVisible(false);
     console.log("Navigating to Kilalao screen with item ID:", id);
   };
-  
+  const  makanyexel= () => {
+    navigation.navigate('ExcelRender');
+    setModalVisible(false);
+    
+  };
   const handleNewAction = () => {
     navigation.navigate('Famakafakana');
     // Implémentez la logique pour une nouvelle action
@@ -101,6 +107,10 @@ const HomeScreen = () => {
               <Ionicons name="close" size={24} color="#333" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.modalButton} onPress={() => handleNavigateToInterfaceData(id)}>
+              <Ionicons name="create-outline" size={24} style={styles.buttonIcon} />
+              <Text style={styles.modalButtonText}>AGE</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={() => makanyexel()}>
               <Ionicons name="add-circle-outline" size={24} style={styles.buttonIcon} />
               <Text style={styles.modalButtonText}>Kilalao vaovao</Text>
             </TouchableOpacity>
@@ -112,7 +122,10 @@ const HomeScreen = () => {
         </View>
       </Modal>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Kilalaom-pitanatanana</Text>
+        <Text style={styles.headerTitle}>Kilalaom-pitatanana</Text>
+      </View>
+      <View style={styles.listContainerTitle}>
+      <Text style={[styles.listTitle,{ fontSize: listTitleFontSize }]}>LISITRY NY MPAMBOLY EFA NANAOVANA MONOPOLY</Text>
       </View>
       <View style={styles.searchContainer}>
         <TextInput
@@ -124,7 +137,6 @@ const HomeScreen = () => {
         />
         <Ionicons name="search" size={24} color="#68B684" style={styles.searchIcon} />
       </View>
-      <Text style={[styles.listTitle,{ fontSize: listTitleFontSize }]}>LISITRY NY MPAMBOLY EFA NANAOVANA MONOPOLY</Text>
       <FlatList
         data={people}
         renderItem={({ item }) => (
@@ -155,13 +167,13 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginBottom: 20,
   },
   
   headerTitle: {
-    fontSize: 36,
+    fontSize: width/20,
     fontWeight: 'bold',
     color: '#303030',
     textAlign: 'center', // Centrer le texte
@@ -170,9 +182,6 @@ const styles = StyleSheet.create({
     textShadowColor: '#ccc', // Couleur de l'ombre du texte
     textShadowOffset: { width: 2, height: 2 }, // Décalage de l'ombre
     textShadowRadius: 10, // Rayon de l'ombre
-    //background: '-webkit-linear-gradient(#e66465, #9198e5)', // Dégradé de couleur de fond (pour les navigateurs WebKit)
-    //WebkitBackgroundClip: 'text', // Clip le texte sur le fond dégradé
-    //WebkitTextFillColor: 'transparent', // Remplit le texte avec la couleur transparente
   },  
   listTitle: {
     fontSize: 32,
@@ -211,6 +220,9 @@ const styles = StyleSheet.create({
   exportButton: {
     marginLeft: 'auto',
   },
+  listContainerTitle: {
+    marginLeft: 0,
+  },
   floatingButton: {
     position: 'absolute',
     bottom: 20,
@@ -236,8 +248,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: '#68B684',
+    height: height/22,
   },
   searchInput: {
     flex: 1,

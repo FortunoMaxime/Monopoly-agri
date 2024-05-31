@@ -51,7 +51,7 @@ const MonComposant = () => {
 
   const recupereDonnees = async (id) => {
     try {
-      const result = await db.getAllAsync(`SELECT id,Anarana,Manambady,Toerana,Kaomimina,Fokotany FROM Mpamokatra WHERE id =?`, [id]);
+      const result = await db.getAllAsync(`SELECT id,Anarana,Manambady,Toerana,Kaominina,Fokotany FROM Mpamokatra WHERE id =?`, [id]);
       setPeople(result);
       console.log(result)
     } catch (error) {

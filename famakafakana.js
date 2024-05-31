@@ -5,6 +5,9 @@ import { SafeAreaView } from 'react-native';
 import { saveDataToTable, getLastId, saveDataKey } from './database';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
+import * as XLSX from 'xlsx';
+
 
 let lastId;
 getLastId('Mpamokatra').then(id => {
@@ -20,6 +23,7 @@ const Famakafakana = ({navigation}) => {
   const [panel3Visible, setPanel3Visible] = useState(false);
   const [panel4Visible, setPanel4Visible] = useState(false);
   const [panel5Visible, setPanel5Visible] = useState(false);
+  const [panel6Visible, setPanel6Visible] = useState(false);
   const [text, setText] = useState('');
   
   const [anaranaSyFanampiny, setAnaranaSyFanampiny] = useState('');
@@ -47,7 +51,23 @@ const [tel, setTel] = useState('');
 const [efaHiaraMiasa, setEfaHiaraMiasa] = useState('');
 
 const [image, setImage] = useState(null); // Déplacez cette ligne ici
+const [fileUri, setFileUri] = useState(null);
+const [fileName, setFileName] = useState('');
 
+
+const [Karazany, setkarazany] = useState('');
+const [JanvierFilana, setJanvierFilana] = useState('');
+const [FevrierFilana, setFevrierFilana] = useState('');
+const [MarsFilana, setMarsFilana] = useState('');
+const [AvrilFilana, setAvrilFilana] = useState('');
+const [MaiFilana, setMai] = useState('');
+const [JuinFilana, setJuinFilana] = useState('');
+const [JuilletFilana, setJuilletFilana] = useState('');
+const [AoutFilana, setAoutFilana] = useState('');
+const [SeptembreFilana, setSeptembreFilana] = useState('');
+const [OctobreFilana, setOctobreFilana] = useState('');
+const [NovembreFilana, setNovembre] = useState('');
+const [DecembreFilana, setDescembreFilana] = useState('');
 
 
   const pickImage = async () => {
@@ -71,7 +91,7 @@ const [image, setImage] = useState(null); // Déplacez cette ligne ici
        Anarana: anaranaSyFanampiny,
        Manambady: manambadySaTsia,
        Toerana: toerana,
-       Kaomimina: kaominina,
+       Kaominina: kaominina,
        Fokotany: fokotany,
        ImageBase64:image,
     };
@@ -158,7 +178,42 @@ const handleSubmitPanel3 = () => {
     setPanel5Visible(!panel5Visible);
   };
 
+  const  importfilana=()=> {
+    pickDocument();
+  }
 
+  const  importtetibola=()=> {
+    pickDocument();
+  }
+   const [isDocumentPickerOpen, setIsDocumentPickerOpen] = useState(false);
+
+  const pickDocument = async () => {
+    if (isDocumentPickerOpen) {
+      console.log('Un document est déjà en cours de sélection. Attendez...');
+      return;
+    }
+
+    setIsDocumentPickerOpen(true);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    });
+      console.log('Document picked:', result.assets[0].uri);
+      const filename = result.assets[0].name? result.assets[0].name : "Nom indéterminé";
+      setFileName(filename);
+    } catch (err) {
+      console.error('Erreur lors de la sélection du document:', err);
+    } finally {
+      setIsDocumentPickerOpen(false);
+    }
+  }
+  const readExcelFile = async (uri) => {
+    const workbook = XLSX.readFile(uri);
+    const sheetNameList = workbook.SheetNames;
+    const worksheet = workbook.Sheets[sheetNameList[0]]; // Sélectionne la première feuille
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    console.log(jsonData);
+  };
   return (
     <SafeAreaView style={styles.container}>
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -171,7 +226,7 @@ const handleSubmitPanel3 = () => {
     <View style={styles.inter}>
     <TouchableOpacity style={[styles.floatingButton]} onPress={pickImage}>
     <Ionicons name="person-circle-outline" size={100} color="#68B684" />
-    {image && <Image source={{ uri: image }} style={styles.floatingButton} />}
+    {image && <Image source={{ uri: image }} style={styles.floatingButtonImg} />}
     </TouchableOpacity>
     <View style={styles.iner}>
     <Text style={styles.label}>Anarana sy fanampiny:</Text>
@@ -381,13 +436,25 @@ const handleSubmitPanel3 = () => {
           style={styles.input}
         />
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmitPanel5}>
-          <Text style={styles.submitButtonText}>Submit</Text>
+          <Text style={styles.submitButtonText}>Raiketina</Text>
         </TouchableOpacity>
       </View>
     </View>
  </View>
 )}
 
+      <View style={styles.panelimport}>
+      <Text style={{ fontSize: 18}}>Importation :</Text>
+      <View style={styles.panelim}>
+      <TouchableOpacity style={styles.import} onPress={pickDocument}>
+      <Text style={styles.importText}>Filan'ny fianakaviana</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.import} onPress={readExcelFile}>
+      <Text style={styles.importText}>Tetibola fikirakirana</Text>
+      </TouchableOpacity>
+      </View>
+       {fileName && <Text style={{textAlign: 'center'}}>Fichier sélectionné: {fileName}</Text>}
+      </View>
       
       </ScrollView>
  </SafeAreaView>
@@ -410,6 +477,36 @@ const styles = {
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+  },
+  panelimport:{
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    flexDirection: 'column',
+  },
+  panelim:{
+    paddingTop: 15,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  import:{
+    backgroundColor: 'blue',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 5,
+    margin: 10,
+  },
+  importText: {
+    color: '#fff',
+    fontSize: 15,
+
   },
   space: {
     height: 20,
@@ -485,6 +582,24 @@ const styles = {
    top: 30, // Positionne le bouton du haut
     left: '45%',  // Positionne le bouton à gauche
     right: null, // Ne positionne pas le bouton à droite (null signifie que la propriété n'est pas appliquée)
+    backgroundColor: '#004300',
+    borderRadius: 100,
+    width: 200,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  floatingButtonImg: {
+    position: 'absolute',
+    right: null, 
     backgroundColor: '#004300',
     borderRadius: 100,
     width: 200,

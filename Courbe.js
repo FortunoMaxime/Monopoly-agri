@@ -45,9 +45,13 @@ const Courbe = () => {
   const calculateDifferences = () => {
     const dataset1 = data.datasets[0].data;
     const dataset2 = data.datasets[1].data;
-    const differences = dataset1.map((value, index) => value - dataset2[index]);
+    const differences = [];
+    for (let i = 0; i < dataset1.length; i++) {
+      differences.push({ month: data.labels[i], value: dataset1[i] - dataset2[i] });
+    }
     return differences;
   };
+
 
   const differences = calculateDifferences();
 
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   differenceContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     marginTop: 10,
   },

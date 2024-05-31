@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, PanResponder, Text, TouchableOpacity, Modal, TextInput, Button, FlatList, Dimensions } from 'react-native';
+import { View, StyleSheet, ImageBackground, Text, TouchableOpacity, Modal, TextInput, Button, FlatList, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 
@@ -70,7 +70,7 @@ const Plateau = () => {
   const renderListItem = ({ item }) => (
     <View style={styles.listItem}>
       <MaterialIcons name={item.icon} size={24} color="black" />
-      <Text style={styles.itemText}>{item.description}: {item.amount} Ariary</Text>
+      <Text style={styles.itemText}>{item.description}: {item.amount} Ar</Text>
       <TouchableOpacity onPress={() => handleEditItem(item)}>
         <MaterialIcons name="edit" size={24} color="black" />
       </TouchableOpacity>
@@ -87,40 +87,44 @@ const Plateau = () => {
       </View>
       <View style={styles.upperContainer}>
         <View style={styles.upperSection}>
-          <Text style={styles.upperText}>Charges Mensuelles</Text>
+          <Text style={styles.upperText}>Fandaniana</Text>
           <TouchableOpacity
             style={styles.floatingButton}
             onPress={() => { setIsCharge(true); setModalVisible(true); }}
           >
             <MaterialIcons name="add" size={30} color="white" />
           </TouchableOpacity>
+          <ImageBackground source={require('./assets/bg/depense.jpg')} resizeMode="cover" style={styles.image}>
           <FlatList
             data={charges}
             keyExtractor={(item) => item.id}
             renderItem={renderListItem}
             style={styles.list}
           />
-          <Text style={styles.bottomText}>Charges Total: {charges.reduce((total, item) => total + parseFloat(item.amount), 0)} Ariary</Text>
+          </ImageBackground>
+          <Text style={styles.bottomText}>Totaly : {charges.reduce((total, item) => total + parseFloat(item.amount), 0)} Ar</Text>
         </View>
         <View style={styles.upperSection}>
-          <Text style={styles.upperText}>Gains Mensuels</Text>
+          <Text style={styles.upperText}>Vola Miditra</Text>
           <TouchableOpacity
             style={styles.floatingButton}
-            onPress={() => { setIsCharge(false); setModalVisible(true); }}
+            onPress={() => { setIsCharge(false); setModalVisible(true); console.log('cliqué le bouton ajouter'); }}
           >
             <MaterialIcons name="add" size={30} color="white" />
           </TouchableOpacity>
+          <ImageBackground source={require('./assets/bg/gain.jpg')} resizeMode="cover" style={styles.image}>
           <FlatList
             data={gains}
             keyExtractor={(item) => item.id}
             renderItem={renderListItem}
             style={styles.list}
           />
-          <Text style={styles.bottomText}>Gains Total: {gains.reduce((total, item) => total + parseFloat(item.amount), 0)} Ariary</Text>
+          </ImageBackground>
+          <Text style={styles.bottomText}>Totaly : {gains.reduce((total, item) => total + parseFloat(item.amount), 0)} Ar</Text>
         </View>
       </View>
       <View style={styles.totalContainer}>
-        <Text style={styles.totalText}>Budget du Mois: {gains.reduce((total, item) => total + parseFloat(item.amount), 0) - charges.reduce((total, item) => total + parseFloat(item.amount), 0)} Ariary</Text>
+        <Text style={styles.totalText}>Vola ampelantanana : <LineBreak /> {gains.reduce((total, item) => total + parseFloat(item.amount), 0) - charges.reduce((total, item) => total + parseFloat(item.amount), 0)} Ariary</Text>
       </View>
       <View style={styles.monthsContainer}>
         <View style={styles.sideContainerTop}>
@@ -258,6 +262,14 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
+  image: {
+    flex: 1,
+    flexDirection: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width : '100%',
+    height : '80%',
+  },
   upperText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -279,6 +291,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 5,
+    zIndex : 33,
   },
   bottomText: {
     fontSize: 14,
@@ -378,7 +391,7 @@ const styles = StyleSheet.create({
     marginVertical: height/150,
   },
   monthText: {
-    fontSize: 14,
+    fontSize: width/40,
     color: '#FFFFFF',
   },
   activeMonth: {
@@ -416,10 +429,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#CCCCCC',
+    backgroundColor : '#fff',
   },
 });
 

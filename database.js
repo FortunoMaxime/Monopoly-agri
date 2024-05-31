@@ -16,7 +16,7 @@ const initDatabase = async () => {
         Anarana TEXT NOT NULL,
         Manambady TEXT NOT NULL,
         Toerana TEXT NOT NULL,
-        Kaomimina TEXT NOT NULL,
+        Kaominina TEXT NOT NULL,
         Fokotany TEXT NOT NULL,
         ImageBase64 TEXT NOT NULL
       );
@@ -52,6 +52,24 @@ const initDatabase = async () => {
       CREATE TABLE IF NOT EXISTS Fanamarihana (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         Fanamarihana TEXT NOT NULL,
+        MpamokatraId INTEGER,
+        FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
+      );
+      CREATE TABLE IF NOT EXISTS FilanaIsambolana(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Karazany TEXT NOT NULL,
+        Janvier TEXT,
+        Fevrier TEXT,
+        Mars TEXT,
+        Avril TEXT,
+        Mai TEXT,
+        Juin TEXT,
+        Juillet TEXT,
+        Aout TEXT,
+        Sepetembre TEXT,
+        Octobre TEXT,
+        Novembre TEXT,
+        Descembre TEXT,
         MpamokatraId INTEGER,
         FOREIGN KEY (MpamokatraId) REFERENCES Mpamokatra(id)
       );

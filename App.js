@@ -14,6 +14,7 @@ import JeuBudgetFamilial from './JeuBudgetFamilial';
 import BudgetInitial from './BudgetInitial';
 import Courbe from './Courbe';
 import KilalaoTabNavigator from './kilalao-taloha'
+import ExcelReader from './excel';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,7 @@ const App = () => {
         <Stack.Screen name="JeuBudgetFamilial" component={JeuBudgetFamilial} options={{ title: 'Jeu Budgétaire Familial' }} />
         <Stack.Screen name="BudgetInitial" component={BudgetInitial} options={{ title: 'Budget Initial' }} />
         <Stack.Screen name="Courbe" component={Courbe} options={{ title: 'Courbe' }} />
+        <Stack.Screen name="ExcelRender" component={ExcelReader} options={{ title: 'ExcelRender'}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
