@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, ImageBackground, Text, TouchableOpacity, Modal, TextInput, Button, FlatList, Dimensions } from 'react-native';
+import { View, StyleSheet, ImageBackground, Text, TouchableOpacity, Modal, TextInput, Button, FlatList, Dimensions, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 
@@ -31,7 +31,7 @@ const Plateau = () => {
     month,
     charges: [],
     gains: [],
-    stockFambolena: [],
+    stockFambolena:  [],
     stockFiompina: [],
     solde: (index === activeMonth ? budjetInitiale : 0),
   }));
@@ -39,12 +39,14 @@ const Plateau = () => {
 
   useEffect(() => {
     const updatedMonthData = months.map((month, index) => ({
-     ...initialMonthData[index],
-      solde: (index === activeMonth? budjetInitiale : 0),
+      ...initialMonthData[index],
+      solde: (index === activeMonth ? budjetInitiale : 0),
+      stockFambolena: initialMonthData[index].stockFambolena, // Ajoutez cette ligne
+      stockFiompina: initialMonthData[index].stockFiompina,   // Ajoutez cette ligne
     }));
     setMonthData(updatedMonthData);
-  }, [budjetInitiale, activeMonth]);  
-
+  }, [budjetInitiale]);
+  
   const newAmount = (solde) => {
     setModalDepart(false);
     setBudjetInitiale(solde);
@@ -97,7 +99,6 @@ const Plateau = () => {
   const handleAddOrEditStockFio = () => {
     if (anarana && isa) {
       const newStockFio = { idFio: editingStockFioId || Date.now().toString(), anarana, isa };
-      console.log(newStockFio.anarana + '  ' + newStockFio.isa);
       const updatedStockFio = monthData.map(month => {
         if (months.indexOf(month.month) === activeMonth) {
             return { 
@@ -179,22 +180,31 @@ const Plateau = () => {
     </TouchableOpacity>
   );
   const renderStockItemFamb = ({ item }) => (
-    <TouchableOpacity
-      onLongPress={() => showOptions(item)}
-      style={styles.listItem}
-    >
-      <MaterialIcons name="agriculture" size={30} color="black" />
-      <Text style={styles.itemText}>{item.karazana}: {item.fatra} Ar</Text>
-    </TouchableOpacity>
-  );
-  const renderStockItemFio = ({ item }) => (
-    <TouchableOpacity
-      onLongPress={() => showOptions(item)}
-      style={styles.listItem}
-    >
+      <TouchableOpacity style={styles.listItem}>
+        <MaterialIcons name="agriculture" size={30} color="black" />
+        <Text style={styles.itemText}>{item.karazana}: {item.fatra} Ar</Text>
+      </TouchableOpacity>
+    );
+  const renderStockItemFio = ({ item }) => {
+    console.log('ito le render fambolena' + item.anarana);
+    return (
+    <TouchableOpacity style={styles.listItem}>
       <MaterialIcons name="pets" size={30} color="black" />
       <Text style={styles.itemText}>{item.anarana}: {item.isa} Ar</Text>
     </TouchableOpacity>
+    );
+  };
+  const testTableau = [
+    { idTest: '1', title: 'Item 1' },
+    { idTest: '2', title: 'Item 2' },
+    { idTest: '3', title: 'Item 3' },
+    { idTest: '4', title: 'Item 4' },
+    { idTest: '5', title: 'Item 5' },
+  ];
+  const renderItemTest = ({ item }) => (
+    <View style={styles.item}>
+      <Text>{item.title}</Text>
+    </View>
   );
 
   const showOptions = (item) => {
@@ -403,24 +413,33 @@ const Plateau = () => {
               <Text style={styles.emptyListText}>Tsy misy</Text>
           )}
           {monthData[activeMonth].stockFambolena.length > 0 && (
-            <FlatList
-              data={monthData[activeMonth].stockFambolena}
-              keyExtractor={(item) => item.idFamb}
-              renderItem={renderStockItemFamb}
-              style={styles.list}
-            />
+            <ScrollView>
+            {monthData[activeMonth].stockFambolena.map((item) => (
+              <View key={item.idFamb} style={styles.list}>
+               <TouchableOpacity style={styles.listItem}>
+                    <MaterialIcons name="agriculture" size={30} color="black" />
+                    <Text style={styles.itemText}>{item.karazana}: {item.fatra} Ar</Text>
+                  </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
           )}
            <Text style={styles.modalTitle}>Fiompiana</Text>
+           {console.log('le amle modal Fiompina : '+monthData[activeMonth].stockFiompina)}
           {monthData[activeMonth].stockFiompina.length === 0 && (
               <Text style={styles.emptyListText}>Tsy misy</Text>
           )}
           {monthData[activeMonth].stockFiompina.length > 0 && (
-            <FlatList
-              data={monthData[activeMonth].stockFiompina}
-              keyExtractor={(item) => item.idFio}
-              renderItem={renderStockItemFio}
-              style={styles.list}
-            />
+            <ScrollView>
+            {monthData[activeMonth].stockFiompina.map((item) => (
+              <View key={item.idFio} style={styles.list}>
+                  <TouchableOpacity style={styles.listItem}>
+                    <MaterialIcons name="pets" size={30} color="black" />
+                    <Text style={styles.itemText}>{item.anarana}: {item.isa} Ar</Text>
+                  </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
           )}
           </View>
           </View>
