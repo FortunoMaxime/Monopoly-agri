@@ -81,7 +81,7 @@ const HomeScreen = () => {
     console.log("Navigating to Kilalao screen with item ID:", id);
   };
   const  makanyexel= () => {
-    navigation.navigate('ExcelRender');
+    navigation.navigate('test');
     setModalVisible(false);
     
   };

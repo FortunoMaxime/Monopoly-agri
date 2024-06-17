@@ -15,7 +15,7 @@ import BudgetInitial from './BudgetInitial';
 import Courbe from './Courbe';
 import KilalaoTabNavigator from './kilalao-taloha'
 import ExcelReader from './excel';
-
+import TabViewExample from './test';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -34,6 +34,7 @@ const App = () => {
         <Stack.Screen name="BudgetInitial" component={BudgetInitial} options={{ title: 'Budget Initial' }} />
         <Stack.Screen name="Courbe" component={Courbe} options={{ title: 'Courbe' }} />
         <Stack.Screen name="ExcelRender" component={ExcelReader} options={{ title: 'ExcelRender'}} />
+        <Stack.Screen name="test" component={TabViewExample} options={{ title: 'test' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
