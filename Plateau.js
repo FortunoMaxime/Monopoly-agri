@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, ImageBackground, Text, TouchableOpacity, Modal, TextInput, Button, FlatList, Dimensions, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Alert, ImageBackground, Text, TouchableOpacity, Modal, TextInput, Button, FlatList, Dimensions, useWindowDimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { TabView, SceneMap } from 'react-native-tab-view';
+import { ScrollView } from 'react-native-virtualized-view';
+import styles from './stylesplateau';
 
 const { width, height } = Dimensions.get('window');
 
 const Plateau = () => {
+  const [afficherMenu, setVisibility] = useState(false);
   const [modalDepart, setModalDepart] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isCharge, setIsCharge] = useState(true);
@@ -22,11 +25,32 @@ const Plateau = () => {
   const [editingStockFioId, setEditingStockFioId] = useState(null);
   const [activeMonth, setActiveMonth] = useState(new Date().getMonth());
   const [modal2Visible, setModal2Visible] = useState(false);
+  const [modalGain ,  setModalGainVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [nomBouton, setNomBouton] = useState('Ajouter');
   const [seeStock, setStockVisible] = useState(false);
   const [budjetInitiale, setBudjetInitiale] = useState(0);
+  const [pileActive , setPileActive] = useState([new Date().getMonth()]);
+  const [disableNext, setDisableNext] = useState(false);
+  const [seeDiceM, setDiceModVis] = useState(false);
+  const [conf, setConf] = useState(false);
+  const [randomValue , setRandomValue] = useState(null);
   const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+  const ResultatDe = [
+    "Tsy misy n'inoninona",
+    "Fahasoavana : 50000 Ar (vola nomen'ny fianakaviana na olon-kafa)",
+    "Loza voajanahary : 2/3 ny vokatra azo (tsy ampy orana, havandra, cyclone, valala)",
+    "Tsy misy n'inoninona",
+    "Mpangalatra vokatra : 1/4 ny vokatra very (na eny atanimboly na eny ampitehirizana) ",
+    "Aretina @ fambolena na fiompiana : 2/3 ny vokatra no azo",
+    "Tsara ny taona : mitombo 1/4 ny vokatra @ fambolena atao",
+    "Tsy misy n'ininoninona",
+    "Fahasimbana eo ampitehirizana : 1/4 ny vokatra simba",
+    "Tsara ny taona : mitombo 1/4 ny vokatra @ fiompiana atao",
+    "Adidy goavana tsy azo ialana : 100.000 Ar",
+    "Adidy maro isankarazany : 5.000 Ar (latsakemboka OP, adidy @ fiangonana,...)"
+
+  ]
   // Initialize monthData array with charges and gains properties for each month
   const initialMonthData = months.map((month, index) => ({
     month,
@@ -48,6 +72,64 @@ const Plateau = () => {
     setMonthData(updatedMonthData);
   }, [budjetInitiale]);
   
+  const next = () => {
+    console.log('le next ', activeMonth);
+    if(activeMonth >= 11){
+      setActiveMonth(0);
+    }else{
+    setActiveMonth(activeMonth + 1);
+    }
+    if (!pileActive.some(pile => pile === activeMonth + 1)){
+    setPileActive([...pileActive,activeMonth + 1]);
+  }
+    console.log('le pile actif : ', pileActive)
+  };
+  const prev = () => {
+    console.log('le prev ', activeMonth);
+    if(activeMonth <= 0){
+      setActiveMonth(11);
+    }else{
+    setActiveMonth(activeMonth - 1);
+    }
+  };
+  const [init, setInit] = useState(new Date().getMonth());
+
+  const terminer = () => {
+    prev();
+    pileActive.push(404);
+    setInit(404);
+  }
+  const nouveaujeu = () => {
+    Alert.alert(
+      'Avertissement',
+      'Toutes les données sont enregistré ! \n Voulez vous commencer un nouveau jeu',
+      [
+        {text: 'NON', onPress: () => setConf(false)},
+        {text: 'OUI', onPress: () => setConf(true)},
+      ]
+    );
+
+   if(conf){
+   setMonthData(initialMonthData);
+   setPileActive([new Date().getMonth()]);
+   }else{
+    prev();
+    pileActive.push(404);
+    setInit(404);
+   }
+  }
+  const checkIfDone = (index) => {
+    if(index === 0){
+      index = 12;
+    }
+    return(!pileActive.some(pile => pile === index));
+  };
+  const disablePrev = () => {
+    return(activeMonth === init  ? true : false);
+  };
+  const estTerminé = () => {
+    return(pileActive.length === 12 && activeMonth === pileActive[0] ? true : false);
+  };
   const newAmount = (solde) => {
     setModalDepart(false);
     setBudjetInitiale(solde);
@@ -133,6 +215,10 @@ const Plateau = () => {
     setEditingStockFioId(null);
   };
 
+  const randomDice = () => {
+    setRandomValue(Math.floor(Math.random() * 12));
+    setDiceModVis(true);
+  };
   const handleEditItem = (item) => {
     setModalVisible(true);
     setAmount(item.amount);
@@ -180,76 +266,12 @@ const Plateau = () => {
       <Text style={styles.itemText}>{item.description}: {item.amount} Ar</Text>
     </TouchableOpacity>
   );
- /* const testTableau = [
-    { idTest: '1', title: 'Item 1' },
-    { idTest: '2', title: 'Item 2' },
-    { idTest: '3', title: 'Item 3' },
-    { idTest: '4', title: 'Item 4' },
-    { idTest: '5', title: 'Item 5' },
-  ];
-  const renderItemTest = ({ item }) => (
-    <View style={styles.item}>
-      <Text>{item.title}</Text>
-    </View>
-  );
-*/
   const showOptions = (item) => {
     setModal2Visible(true);
     setSelectedItem(item);
   };
-  const FambolenaTab = () => {
-    return(
-    <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
-  /*  {monthData[activeMonth].stockFambolena.length === 0 && (
-      <Text style={styles.emptyListText}>Tsy misy</Text>
-  )}
-  {monthData[activeMonth].stockFambolena.length > 0 && (
-    <ScrollView>
-    {monthData[activeMonth].stockFambolena.map((item) => (
-      <View key={item.idFamb} style={styles.list}>
-       <TouchableOpacity style={styles.listItemStock}>
-            <MaterialIcons name="agriculture" size={30} color="black" />
-            <Text style={styles.itemText}>{item.karazana}: {item.fatra} Kg</Text>
-          </TouchableOpacity>
-      </View>
-    ))}
-  </ScrollView>
-  )}*/);
-};
-  
-  const FiompianaTab = () => {
-    return(
-    <View style={[styles.scene, { backgroundColor: '#673ab7' }]} />
-   /* {monthData[activeMonth].stockFiompina.length === 0 && (
-      <Text style={styles.emptyListText}>Tsy misy</Text>
-  )}
-  {monthData[activeMonth].stockFiompina.length > 0 && (
-    <ScrollView>
-    {monthData[activeMonth].stockFiompina.map((item) => (
-      <View key={item.idFio} style={styles.list}>
-          <TouchableOpacity style={styles.listItemStock}>
-            <MaterialIcons name="pets" size={30} color="black" />
-            <Text style={styles.itemText}>{item.anarana}: {item.isa} isa</Text>
-          </TouchableOpacity>
-      </View>
-    ))}
-  </ScrollView>
-  )}*/);
-};
- /* const initialLayout = { width: width};
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: 'fambolena', title: 'Fambolena' },
-    { key: 'fiompiana', title: 'Fiompiana' },
-  ]);*/
-
- /* const renderScene = SceneMap({
-    fambolena: FambolenaTab,
-    fiompiana: FiompianaTab,
-  });
-*/
 const FirstRoute = () => (
-  <View style={{ flex: 1, backgroundColor: '#ff4081' }}>
+  <View style={styles.elementtabview}>
     {monthData[activeMonth].stockFambolena.length === 0 && (
       <Text style={styles.emptyListText}>Tsy misy</Text>
   )}
@@ -297,7 +319,7 @@ const layout = useWindowDimensions();
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'first', title: 'Fambolena' },
+    { key: 'first', title: 'Fambolena', },
     { key: 'second', title: 'Fiompiana' },
   ]);
 
@@ -306,7 +328,7 @@ const layout = useWindowDimensions();
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-      <TouchableOpacity style={styles.menuBurger} onPress={() => console.log('Menu clicked')}>
+      <TouchableOpacity style={styles.menuBurger} onPress={() => setVisibility(!afficherMenu)}>
                 <MaterialIcons name="menu" size={30} color="white" />
         </TouchableOpacity>
         <Text style={styles.topBarText}>{months[activeMonth]}</Text>
@@ -314,6 +336,26 @@ const layout = useWindowDimensions();
                 <MaterialIcons name="store" marginRight ={width/100} size={30} color="white" />
         </TouchableOpacity>
       </View>
+     <ScrollView>
+      {afficherMenu && 
+      <View style ={styles.menuList}>
+          <TouchableOpacity style ={styles.tOpList}>
+          <MaterialIcons name= "view-list" size={30} color="black" />
+          <Text style={styles.itemText}>Liste</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style ={styles.tOpList}>
+          <MaterialIcons name= "download" size={30} color="black" />
+          <Text style={styles.itemText}>Importer</Text>
+          </TouchableOpacity> 
+          <TouchableOpacity style ={styles.tOpList}>
+          <MaterialIcons name= "upload" size={30} color="black" />
+          <Text style={styles.itemText}>Exporter</Text>
+          </TouchableOpacity>
+           <TouchableOpacity style ={styles.tOpList}>
+           <MaterialIcons name= "help" size={30} color="black" />
+           <Text style={styles.itemText}>Guide</Text>
+          </TouchableOpacity>
+      </View>}
       <View style={styles.upperContainer}>
         <View style={styles.upperSection}>
           <Text style={styles.upperText}>Fandaniana</Text>
@@ -342,7 +384,7 @@ const layout = useWindowDimensions();
           <Text style={styles.upperText}>Vola Miditra</Text>
           <TouchableOpacity
             style={styles.floatingButton}
-            onPress={() => { setIsCharge(false); setModalVisible(true); }}
+            onPress={() => { setIsCharge(false); setModalGainVisible(true); }}
           >
             <MaterialIcons name="add" size={30} color="white" />
           </TouchableOpacity>
@@ -370,8 +412,12 @@ const layout = useWindowDimensions();
           {["Janvier", "Février", "Mars", "Avril"].map((month, index) => (
             <TouchableOpacity
               key={index}
-              style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance]}
-              onPress={() => setActiveMonth(months.indexOf(month))}
+              disabled = {checkIfDone(months.indexOf(month))}
+              style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance, checkIfDone(months.indexOf(month)) && styles.disabledMonth]}
+              onPress={() =>{
+                setActiveMonth(months.indexOf(month));
+                console.log(activeMonth);
+              } }
             >
               <Text style={styles.monthText}>{month}</Text>
               {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
@@ -383,28 +429,45 @@ const layout = useWindowDimensions();
             {["Décembre", "Novembre"].map((month, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance]}
-                onPress={() => setActiveMonth(months.indexOf(month))}
+                disabled = {checkIfDone(months.indexOf(month))}
+                style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance, checkIfDone(months.indexOf(month)) && styles.disabledMonth]}
+                onPress={() =>{
+                  setActiveMonth(months.indexOf(month));
+                  console.log(activeMonth);
+                } }
               >
                 <Text style={styles.monthText}>{month}</Text>
                 {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
               </TouchableOpacity>
             ))}
           </View>
+          <View style={styles.middleMiddleContainer}>
+          <View style={styles.controlContainer}>
+            <TouchableOpacity disabled = {disablePrev()} onPress={() => prev()} style = {disablePrev() && styles.disabledControl}>
+              <MaterialIcons name ="navigate-before" size={width/15} color="white" />
+            </TouchableOpacity>
+            </View>
           <View style={styles.diceContainer}>
-            <TouchableOpacity onPress={() => setActiveMonth(Math.floor(Math.random() * 12))}>
+            <TouchableOpacity onPress={() => randomDice()}>
               <MaterialIcons name="casino" size={width/15} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setActiveMonth(Math.floor(Math.random() * 12))}>
-              <MaterialIcons name="casino" size={width/15} color="white" />
+          </View>
+          <View style={styles.controlContainer}>
+            <TouchableOpacity disabled = {disableNext} onPress={() => next()}>
+              <MaterialIcons name="navigate-next" size={width/15} color="white" />
             </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.sideContainerRight}>
             {["Mai", "Juin"].map((month, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance]}
-                onPress={() => setActiveMonth(months.indexOf(month))}
+                disabled = {checkIfDone(months.indexOf(month))}
+                style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance, checkIfDone(months.indexOf(month)) && styles.disabledMonth]}
+                onPress={() =>{
+                  setActiveMonth(months.indexOf(month));
+                  console.log(activeMonth);
+                } }
               >
                 <Text style={styles.monthText}>{month}</Text>
                 {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
@@ -416,8 +479,12 @@ const layout = useWindowDimensions();
           {["Octobre", "Septembre", "Août", "Juillet"].map((month, index) => (
             <TouchableOpacity
               key={index}
-              style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance]}
-              onPress={() => setActiveMonth(months.indexOf(month))}
+              disabled = {checkIfDone(months.indexOf(month))}
+              style={[styles.monthItem, months.indexOf(month) === activeMonth && styles.activeMonth, monthData[months.indexOf(month)].solde < 0 && styles.negativeBalance, checkIfDone(months.indexOf(month)) && styles.disabledMonth]}
+              onPress={() =>{
+                setActiveMonth(months.indexOf(month));
+                console.log(activeMonth);
+              } }
             >
               <Text style={styles.monthText}>{month}</Text>
               {months.indexOf(month) === activeMonth && <MaterialIcons name="place" size={24} color="red" />}
@@ -425,6 +492,8 @@ const layout = useWindowDimensions();
           ))}
         </View>
       </View>
+      </ScrollView>
+
       <Modal
           transparent={true}
           visible={modalDepart}
@@ -485,6 +554,9 @@ const layout = useWindowDimensions();
           </View>
           </View>
       </Modal>
+
+
+
       <Modal
           transparent={true}
           visible={seeStock}
@@ -492,6 +564,7 @@ const layout = useWindowDimensions();
           onRequestClose={() => setStockVisible(false)}
         >
           <View style={styles.modal3Container}>
+           <View style = {styles.contenuDuStock}>
           <View style = {styles.TitreModal}>
           <Text style={styles.modalTitle}>Stock</Text>
           <TouchableOpacity style={styles.modalFermer}  onPress={() => setStockVisible(false)}>
@@ -507,7 +580,36 @@ const layout = useWindowDimensions();
           />
           </View>
           </View>
+          </View>
       </Modal>
+
+
+      <Modal
+          transparent={true}
+          visible={modalGain}
+          animationType="slide"
+          onRequestClose={() => setModalGainVisible(false)}
+        >
+          <View style={styles.modal3Container}>
+           <View style = {styles.contenuDuStock}>
+          <View style = {styles.TitreModal}>
+          <Text style={styles.modalTitle}>Fidirambola </Text>
+          <TouchableOpacity style={styles.modalFermer}  onPress={() => setModalGainVisible(false)}>
+                  <MaterialIcons name="close" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style = {styles.TabViews}>
+          <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            initialLayout={{ width: layout.width }}
+          />
+          </View>
+          </View>
+          </View>
+      </Modal>
+
 
       <Modal
           transparent={true}
@@ -529,6 +631,8 @@ const layout = useWindowDimensions();
           </View>
           </View>
       </Modal>
+
+
 
     <Modal
         transparent={true}
@@ -566,354 +670,42 @@ const layout = useWindowDimensions();
           </View>
         </View>
       </Modal>
+      <Modal
+        transparent={true}
+        visible={estTerminé()}
+        animationType="slide"
+        onRequestClose={resetModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Tour terminé !</Text>
+            <TouchableOpacity style={styles.modalOptTxt} onPress={() => terminer()}>
+              <Text style={styles.optionText}>Scéance de conseil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalOptTxt} onPress={() => nouveaujeu()}>
+              <Text style={styles.optionText}>Nouveau jeu</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent={true}
+        visible={seeDiceM}
+        animationType="fade"
+        onRequestClose={resetModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Resultat</Text>
+              <Text style={styles.optionText}>{(randomValue + 1)}</Text>
+              <Text style={styles.optionText}>{ResultatDe[randomValue]}</Text>
+              <TouchableOpacity onPress={() => setDiceModVis(false)}>
+              <Text style={styles.annulerTxt} >Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7F9FC',
-  },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: height / 200,
-    backgroundColor: '#228b22',
-  },
-  menuBurger :{
-    justifyContent : 'center',
-    alignItems : 'center',
-    left : width /60,
-  },
-  topBarText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign : 'center',
-    margin: 'auto',
-  },
-  upperContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    height: height * 0.35,
-  },
-  upperSection: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    margin: 5,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  image: {
-    flex: 1,
-    flexDirection: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width : '80%',
-    height : '60%',
-    margin : 'auto',
-  },
-  upperText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 10,
-  },
-  floatingButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: '#34A853',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 5,
-    zIndex : 33,
-  },
-  bottomText: {
-    fontSize: 14,
-    color: '#666666',
-    margin: 10,
-    position: 'absolute',
-    bottom: 0,
-    backgroundColor: '#FFFFFF',
-    width :'100%',
-    borderTopRightRadius: 20,
-  },
-  totalContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 15,
-    marginHorizontal: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 5,
-    marginVertical: 10,
-  },
-  totalText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-  },
-  monthsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    backgroundColor: '#fff',
-    height: height * 0.45,
-  },
-  sideContainerLeft: {
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  sideContainerRight: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    borderColor: 'green',
-    marginLeft: 'auto',
-    marginRight : width/100,
-  },
-  sideContainerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    flexWrap: 'nowrap',
-    width: '100%',
-  },
-  sideContainerBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    flexWrap: 'nowrap',
-    width: '100%',
-    borderColor: 'blue',
-    margin: 'auto',
-  },
-  middleContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    marginHorizontal: width/200,
-  },
-  diceContainer: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#34A853',
-    height: width * 0.15,
-    width: width * 0.15,
-    marginVertical: 'auto',
-    marginHorizontal: width / 5.5,
-    borderRadius: 10,
-  },
-  monthItem: {
-    width: width * 0.22,
-    height: width * 0.12,
-    padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#346751',
-    margin: 5,
-    borderRadius: 5,
-    marginVertical: height/150,
-  },
-  monthText: {
-    fontSize: width/40,
-    color: '#FFFFFF',
-  },
-  activeMonth: {
-    backgroundColor: '#4E9F3D',
-  },
-  negativeBalance : {
-    backgroundColor : 'red',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modal2Container:{
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modal3Container:{
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    paddingTop : height/8,
-  },
-  TitreModal : {
-    flexDirection : 'row',
-    width : "100%",
-    justifyContent : 'center',
-  },
-  modalFermer: {
-    height :  height / 24,
-    backgroundColor: 'rgba(255, 0, 0, 0.8)',
-    width : height / 24,
-    borderRadius : height / 12,
-    position:'absolute',
-    right : 0,
-    justifyContent :'center',
-    alignItems : 'center',
-  },
-  TabViews : {
-    flexDirection : 'row',
-    width : '100%',
-    height : '100%',
-  },
-  modalContent2: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 10,
-    width: '95%',
-    alignItems: 'center',
-  },
-  modalOptTxt: {
-    width:  '90%',
-    height :  height / 18,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    padding : 10,
-    margin : 5,
-    justifyContent : 'center',
-    alignItems: 'center',
-    borderRadius : 10,
-  },
-  modalSuite: {
-    width:  '90%',
-    height :  height / 18,
-    backgroundColor: 'green',
-    padding : 10,
-    margin : 5,
-    justifyContent : 'center',
-    alignItems: 'center',
-    borderRadius : 10,
-  },
-  optionText2: {
-    color: '#fff',
-  },
-  optionText3 : {
-    fontWeight : 'bold',
-  },
-  tahiry: {
-    flexDirection : 'row',
-    width :'100%',
-    alignItems : 'center',
-    height : 'content',
-    paddingVertical : height / 50,
-  },
-  hanampy: {
-    width:  '40%',
-    height :  height / 20,
-    backgroundColor: 'green',
-    justifyContent : 'center',
-    alignItems: 'center',
-    padding : 5,
-    position : 'absolute',
-    right : 0,
-    borderRadius : 10,
-  },
-  annulerTxt : {
-    color: 'red',
-    fontWeight : 'bold',
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    borderBottomWidth: 1,
-    marginBottom: 20,
-    padding: 5,
-    fontSize: 16,
-  },
-  list: {
-    flex: 1,
-  },
-  listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#CCCCCC',
-  },
-  listItemStock: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderBottomColor: '#CCCCCC',
-  },
-  itemText: {
-    fontSize: 14,
-    color: '#666666',
-    marginLeft: 10,
-  },
-  icon: {
-    marginRight: 10,
-  },
-  itemDetails: {
-    flex: 1,
-  },
-  itemDescription: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-  },
-  itemAmount: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  itemActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  emptyListText:{
-    marginTop: '30%',
-    color: '#ccc',
-    fontSize : height / 40,
-  },
-  elementtabview : {
- flex : 1,
- backgroundColor : 'white',
- alignItems  : 'center',
- justifyContent : 'center',
- textAlign : 'center',
-  },
-});
 export default Plateau;
