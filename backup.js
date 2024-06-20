@@ -171,7 +171,6 @@ const Plateau = () => {
      
       setMonthData(updatedData);
       resetModal();
-      console.log('nandalo amle ajout na item anatiny')  
     }
     console.log('nandalo amle ajout na item')  
   };
@@ -307,8 +306,7 @@ const Plateau = () => {
     setMonthData(updatedData);
     setModal3Visible(false);
   };
-
-
+  
   const handleHivarotraFamb = (item)  => {
     console.log(FatraNaIsa);
     console.log(Pu);
@@ -316,19 +314,15 @@ const Plateau = () => {
     if(Pu && FatraNaIsa){
       const am = Pu * FatraNaIsa;
       const des = item.karazana;
-      const newItem2 = { id: Date.now().toString(), amount : am, description : des, icon: "agriculture" };
-      const updatedData2 = monthData.map(month => {
-        if (months.indexOf(month.month) === activeMonth) {
-            return { 
-              ...month, 
-              gains: [...month.gains, newItem2],
-              solde: month.solde - (isCharge ? parseFloat(am) : -parseFloat(am)) 
-            };
-        }
-        return month;
-      });    
-      setMonthData(updatedData2);
+      console.log(am);
+      console.log(des);
+      setAmount(am);
+      setDescription(des);
+      console.log('amount : ', amount);
+      console.log('description : ', description);
+      setSelectedIcon("gras");
       setModalVenteVisible(false);
+      handleAddOrEditItem();
     }
   };
 
@@ -830,7 +824,7 @@ const [routes] = React.useState([
             <TouchableOpacity style={styles.modalOptTxt} onPress={() => handleDeleteProduit(isFambolena ? selectedProduit.idFamb : selectedProduit.idFio)}>
               <Text style={styles.optionText}>Supprimer</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalOptTxt} onPress={() =>  {setModalVenteVisible(true); setModal3Visible(false)}}>
+            <TouchableOpacity style={styles.modalOptTxt} onPress={() =>  setModalVenteVisible(true)}>
               <Text style={styles.optionText}>Vendre</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setModal3Visible(false)}>
@@ -922,7 +916,7 @@ const [routes] = React.useState([
               style={styles.input}
               onValueChange={(itemValue) => setSelectedIcon(itemValue)}
             >
-              <Picker.Item label="Fambolena" value="agriculture" />
+              <Picker.Item label="Fambolena" value="gras" />
               <Picker.Item label="Tokan-trano" value="family-restroom" />
               <Picker.Item label="Fiompiana" value="pets" />
               {/* Add more icons as needed */}

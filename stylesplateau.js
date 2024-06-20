@@ -315,6 +315,13 @@ const styles = StyleSheet.create({
       width: '80%',
       alignItems: 'center',
     },
+    IMFcontent : {
+      width: '90%',
+      alignItems: 'center',
+      backgroundColor: 'rgba(200,200,200,0.5)',
+      padding: 20,
+      borderRadius: 10,
+    },
     modalTitle: {
       fontSize: 18,
       fontWeight: 'bold',
@@ -382,10 +389,10 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     elementtabview : {
+  paddingTop : height /50,
    flex : 1,
    backgroundColor : 'white',
    alignItems  : 'center',
-   justifyContent : 'center',
    textAlign : 'center',
     },
   });
