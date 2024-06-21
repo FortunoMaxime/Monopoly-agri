@@ -4,6 +4,7 @@ import { DataTable } from 'react-native-paper';
 import { insertDonneexel, getLastId } from './database';
 import { Ionicons } from '@expo/vector-icons';
 
+
 const ExcelSimulator = ({ navigation }) => {
     const [somme, setsomme] = useState('');
     const [data, setData] = useState([
@@ -15,14 +16,7 @@ const ExcelSimulator = ({ navigation }) => {
     const [TotaltyFandanina, setFandanina] = useState([
         ['Totaly','', '', '', '', '', '', '', '', '', '', '', '', ''],
     ]);
-    useEffect(() => {
-        getLastId('Mpamokatra')
-            .then(id => {
-                console.log('Dernier ID:', id);
-                return id;
-            })
-            .catch(error => console.error('Erreur:', error));
-    }, []);
+
 
     const calculateTotalSum = () => {
         const sum = TotaltyFandanina[0].slice(1).reduce((acc, val) => {
@@ -31,28 +25,22 @@ const ExcelSimulator = ({ navigation }) => {
         }, 0);
         setsomme(sum.toString());
     };
-
     function handleCellChange(rowIndex, cellIndex, newText) {
-        const newData = [...data];
-        newData[rowIndex][cellIndex] = newText;
-        setData(newData);
-        if (cellIndex > 0 && cellIndex < data[0].length - 1 && /^\d+$/.test(newText)) {
-            updateTotaly();
-            updateTotaltyFandanina();
-            calculateTotalSum();
+        if (cellIndex === 0) {
+            const newData = [...data];
+            newData[rowIndex][cellIndex] = newText;
+            setData(newData);
+        } else {
+            if (cellIndex > 0 && cellIndex < data[0].length - 1 && /^\d+$/.test(newText)) {
+                const newData = [...data];
+                newData[rowIndex][cellIndex] = newText;
+                setData(newData);
+                updateTotaly();
+            }
         }
     }
-    function updateTotaltyFandanina() {
-        const totals = data[0].slice(0, -1).map((_, columnIndex) => {
-            if (columnIndex === 0) return 'Totaly';
-            const sum = data.slice(1,-1).reduce((acc, row) => {
-                const value = parseFloat(row[columnIndex]);
-                return acc + (isNaN(value) ? 0 : value);
-            }, 0);
-            return sum.toString();
-        });
-        setFandanina([totals]);
-    }
+
+
     
     function updateTotaly() {
         setData(prevData => {
@@ -99,8 +87,14 @@ const ExcelSimulator = ({ navigation }) => {
     }
 
     function retrieveData() {
+        const itemId=getLastId('Mpamokatra')
+        .then(id => {
+            console.log('Dernier ID:', id);
+            return id;
+        })
+        .catch(error => console.error('Erreur:', error));
         const result=data.slice(1);
-        insertDonneexel(result);
+        insertDonneexel(result,'FilanaIsambolana',itemId);
     }
 
     return (

@@ -362,7 +362,7 @@ let newData;
 function diviserCalendrier(tableau) {
   // Ligne spécifique à inclure dans la division
   const ligneSpecifique = "Vokatra nohanina (en nature)";
-  const ligneniakatra = "Vokatra niakatra (en nature)";
+  const ligneniakatra = "Karazany";
   
   // Trouver l'index de la ligne spécifiée
   const indexLigne = tableau.findIndex(ligne => ligne.includes(ligneSpecifique));
@@ -372,7 +372,13 @@ function diviserCalendrier(tableau) {
   }
 
   // Diviser le tableau en deux parties
+  
   const tableauAvantnohanina = tableau.slice(0, indexLigne).map(ligne => ligne.slice(0,-1));
+ // const tabtenaalefa = tableauAvantnohanina.findIndex(ligne => ligne.some(cell => cell === "Vola voalohan'ny volana"));
+
+  // Supprimer toutes les lignes jusqu'à celle contenant "Vola voalohan'ny volana"
+  //const tenaavant = tableauAvantnohanina.slice(indexVola+2);
+
   const tableauApresnohanina = tableau
   .slice(indexLigne + 1)
   .map(ligne => ligne.slice(0,-1))
@@ -390,7 +396,7 @@ function diviserCalendrier(tableau) {
   
   // Trouver l'index de la ligne "Vokatra niakatra (en nature)" dans la première partie
   const indexniakatra = tableauAvantnohanina.findIndex(ligne => ligne.includes(ligneniakatra));
-  tableauAvantnohanina.splice(0, indexniakatra+1);
+  tableauAvantnohanina.splice(0, indexniakatra+2);
  
   //tableauAvantnohanina.push(lastId);
   //tableauApresnohanina.push(lastId);

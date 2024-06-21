@@ -42,9 +42,13 @@ const Courbe = () => {
   const fetchData = useCallback(async () => {
     await recupereDonnees1(itemId);
     await recupereDonnees2(itemId);
+   
+  }, [itemId]);
+
+  useEffect(async() => {
     await recupereDonneesFandanina(itemId);
     await recupereDonneesFidiralbola(itemId);
-  }, [itemId]);
+  }, [fidirana,fandanina]);
 
   const recupereDonneesFandanina = async (id) => {
     try {
@@ -209,7 +213,7 @@ const Courbe = () => {
           if (result[i][key] === "" || result[i][key] === null) {
             result[i][key] = 0;
           }
-          console.log(`fidirana[${i}][${key}] = `, result[i][key]);
+         // console.log(`fidirana[${i}][${key}] = `, result[i][key]);
         }
       }
 

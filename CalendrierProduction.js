@@ -23,7 +23,7 @@ const CalendrierProduction = () => {
   const recupereFamokarana = async (lastId) => {
     const db = await SQLite.openDatabaseAsync('monopoly.db');
     try {
-      const result = await db.getAllAsync('SELECT Sehapihariana,VolanaNambolena,VolanaNamokarana FROM Famokarana ');
+      const result = await db.getAllAsync(`SELECT Sehapihariana,VolanaNambolena,VolanaNamokarana FROM Famokarana WHERe MpamokatraId=${lastId}`);
       setResultfamokarana(result);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);

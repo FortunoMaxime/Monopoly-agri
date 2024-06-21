@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity ,Button} from 'react-native';
-import { copyColumnData,getLastId,insertDonneFandanina,insertDonneexel,insertTotaly,insertFandanianaData} from './database';
+import { copyColumnData,getLastId,insertDonneFandanina,insertDonneexel,insertTotaly,inse} from './database';
 import { DataTable } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -34,11 +34,15 @@ const [TotaltyFidirana, setFidirana] = useState([
   }, []);
   useEffect(() => {
     updateTotaltyFandanina();
+  
   }, [data]);
+
   useEffect(() => {
     updateTotaltyFidirana();
 
   }, [data1]);
+
+  
 
   const retrieveData = async(table,nomtable) => {
     const result=table.slice(1);     
@@ -124,27 +128,29 @@ function updateTotaltyFandanina() {
       <Text style={{ fontSize: 20, padding: 10 }}>Fandaniana:</Text>
       <ScrollView horizontal={true}>
         <DataTable>
-          <DataTable.Header>
-            {data[0].map((header, index) => (
-              <DataTable.Title key={index}>{header}</DataTable.Title>
-            ))}
-          </DataTable.Header>
-          {data.slice(1).map((row, rowIndex) => (
+        {data.slice(1).map((row, rowIndex) => (
             <DataTable.Row key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <DataTable.Cell key={cellIndex} style={styles.cell}>
-                  <TextInput
-                    value={cell}
-                    onChangeText={(text) => handleCellChange(rowIndex + 1, cellIndex, text)}
-                    style={[styles.input, styles.cell]}
-                    editable={cellIndex !== data[0].length - 1}
-                  />
-                </DataTable.Cell>
-              ))}
+                {row.map((cell, cellIndex) => (
+                    <DataTable.Cell key={cellIndex} style={styles.cell}>
+                        {cellIndex === data[0].length - 1 ? (
+                            <TextInput
+                                value={cell.toString()}
+                                editable={false}
+                                style={[styles.input, styles.cell]}
+                            />
+                        ) : (
+                            <TextInput
+                                value={cell.toString()}
+                                onChangeText={(text) => handleCellChange(rowIndex + 1, cellIndex, text)}
+                                style={[styles.input, styles.cell]}
+                            />
+                        )}
+                    </DataTable.Cell>
+                ))}
             </DataTable.Row>
-          ))}
-        </DataTable>
-      </ScrollView>
+        ))}
+    </DataTable>
+          </ScrollView>
       <ScrollView horizontal={true}>
             <DataTable>
                 
@@ -177,18 +183,25 @@ function updateTotaltyFandanina() {
           </DataTable.Header>
           {data1.slice(1).map((row, rowIndex) => (
             <DataTable.Row key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <DataTable.Cell key={cellIndex} style={styles.cell}>
-                  <TextInput
-                    value={cell}
-                    onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
-                    style={[styles.input, styles.cell]}
-                    editable={cellIndex !== data1[0].length - 1}
-                  />
-                </DataTable.Cell>
-              ))}
+                {row.map((cell, cellIndex) => (
+                    <DataTable.Cell key={cellIndex} style={styles.cell}>
+                        {cellIndex === data1[0].length - 1 ? (
+                            <TextInput
+                                value={cell.toString()}
+                                editable={false}
+                                style={[styles.input, styles.cell]}
+                            />
+                        ) : (
+                            <TextInput
+                                value={cell.toString()}
+                                onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
+                                style={[styles.input, styles.cell]}
+                            />
+                        )}
+                    </DataTable.Cell>
+                ))}
             </DataTable.Row>
-          ))}
+        ))}
         </DataTable>
       </ScrollView>
       <ScrollView horizontal={true}>
@@ -223,18 +236,25 @@ function updateTotaltyFandanina() {
           </DataTable.Header>
           {niakatra.slice(1).map((row, rowIndex) => (
             <DataTable.Row key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <DataTable.Cell key={cellIndex} style={styles.cell}>
-                  <TextInput
-                    value={cell}
-                    onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
-                    style={[styles.input, styles.cell]}
-                    editable={cellIndex !== niakatra[0].length - 1}
-                  />
-                </DataTable.Cell>
-              ))}
+                {row.map((cell, cellIndex) => (
+                    <DataTable.Cell key={cellIndex} style={styles.cell}>
+                        {cellIndex === niakatra[0].length - 1 ? (
+                            <TextInput
+                                value={cell.toString()}
+                                editable={false}
+                                style={[styles.input, styles.cell]}
+                            />
+                        ) : (
+                            <TextInput
+                                value={cell.toString()}
+                                onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
+                                style={[styles.input, styles.cell]}
+                            />
+                        )}
+                    </DataTable.Cell>
+                ))}
             </DataTable.Row>
-          ))}
+        ))}
         </DataTable>
       </ScrollView>
       <TouchableOpacity style={styles.floatingButton} onPress={addRow1}>
@@ -251,18 +271,25 @@ function updateTotaltyFandanina() {
           </DataTable.Header>
           {nohanina.slice(1).map((row, rowIndex) => (
             <DataTable.Row key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <DataTable.Cell key={cellIndex} style={styles.cell}>
-                  <TextInput
-                    value={cell}
-                    onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
-                    style={[styles.input, styles.cell]}
-                    editable={cellIndex !== nohanina[0].length - 1}
-                  />
-                </DataTable.Cell>
-              ))}
+                {row.map((cell, cellIndex) => (
+                    <DataTable.Cell key={cellIndex} style={styles.cell}>
+                        {cellIndex === nohanina[0].length - 1 ? (
+                            <TextInput
+                                value={cell.toString()}
+                                editable={false}
+                                style={[styles.input, styles.cell]}
+                            />
+                        ) : (
+                            <TextInput
+                                value={cell.toString()}
+                                onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
+                                style={[styles.input, styles.cell]}
+                            />
+                        )}
+                    </DataTable.Cell>
+                ))}
             </DataTable.Row>
-          ))}
+        ))}
         </DataTable>
       </ScrollView>
       <TouchableOpacity style={styles.floatingButton} onPress={addRow1}>
@@ -277,20 +304,27 @@ function updateTotaltyFandanina() {
               <DataTable.Title key={index}>{header}</DataTable.Title>
             ))}
           </DataTable.Header>
-          {tenafilana.slice(1).map((row, rowIndex) => (
+          {filana.slice(1).map((row, rowIndex) => (
             <DataTable.Row key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <DataTable.Cell key={cellIndex} style={styles.cell}>
-                  <TextInput
-                    value={cell}
-                    onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
-                    style={[styles.input, styles.cell]}
-                    editable={cellIndex !== tenafilana[0].length - 1}
-                  />
-                </DataTable.Cell>
-              ))}
+                {row.map((cell, cellIndex) => (
+                    <DataTable.Cell key={cellIndex} style={styles.cell}>
+                        {cellIndex === filana[0].length - 1 ? (
+                            <TextInput
+                                value={cell.toString()}
+                                editable={false}
+                                style={[styles.input, styles.cell]}
+                            />
+                        ) : (
+                            <TextInput
+                                value={cell.toString()}
+                                onChangeText={(text) => handleCellChange1(rowIndex + 1, cellIndex, text)}
+                                style={[styles.input, styles.cell]}
+                            />
+                        )}
+                    </DataTable.Cell>
+                ))}
             </DataTable.Row>
-          ))}
+        ))}
         </DataTable>
       </ScrollView>
       <TouchableOpacity style={styles.floatingButton} onPress={addRow1}>

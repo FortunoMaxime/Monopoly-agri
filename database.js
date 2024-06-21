@@ -417,7 +417,7 @@ async function insertTotaly(data, nomtable,mpamokatraid) {
   }
 }
 
-async function insertVokatraData(data, tableName) {
+async function insertVokatraData(data, tableName,last) {
   if (!Array.isArray(data)) {
     throw new Error('Les données doivent être un tableau de tableaux.');
   }
@@ -428,7 +428,7 @@ async function insertVokatraData(data, tableName) {
     try {
       await db.runAsync(
         `INSERT INTO ${tableName}(Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre, MpamokatraId) 
-                       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,${last})`
                       );
       
     } catch (error) {

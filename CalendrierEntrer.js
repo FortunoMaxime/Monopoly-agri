@@ -37,6 +37,17 @@ const Production = ({ navigation }) => {
         }
     }
   }, [nom]);
+  const retrieveData = async(table,nomtable) => {
+    const result=table.slice(1);
+    const last= await getLastId('Mpamokatra');
+    console.log(last);
+    insertVokatraData(table,nomtable,last);
+}
+
+function toutenregistrer() {
+     retrieveData(data,'VokatraNiakatra');
+     retrieveData(data1,'VokatraNohanina');
+}
 
   function handleCellChange(rowIndex, cellIndex, newText) {
       if (cellIndex === 0) {
@@ -184,7 +195,7 @@ function addKarazany1(karazanyValue) {
                   ))}
               </DataTable>
           </ScrollView>
-          <Button title="Tahirizina"/>
+          <Button title="Tahirizina" onPress={toutenregistrer} />
           <View style={styles.space} />
       </ScrollView>
   );

@@ -4,9 +4,12 @@ import { DataTable } from 'react-native-paper';
 import { insertDonneexel, getLastId } from './database';
 import { Ionicons } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
-import AlertCustom from './AlertCustom'; 
+import AlertCustom from './AlertCustom';
+import { useRoute } from '@react-navigation/native'; 
 
 const JeuBudgetFamilial = () => {
+const route = useRoute();
+const { itemId } = route.params;
   const [somme, setsomme] = useState('');
   const [isEditable, setIsEditable] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -21,14 +24,8 @@ const JeuBudgetFamilial = () => {
   ]);
 
   useEffect(() => {
-    getLastId('Mpamokatra')
-        .then(id => {
-            console.log('Dernier ID:', id);
-            return id;
-        })
-        .then(id =>  recupereDonnees1(id))
-        .catch(error => console.error('Erreur:', error));
-}, []);
+ recupereDonnees1(itemId)
+}, [itemId]);
 function toggleEditable() {
   setIsEditable(prevState => !prevState);
 }
@@ -36,7 +33,7 @@ function toggleEditable() {
 const recupereDonnees1 = async (id) => {
   try {
       const db = await SQLite.openDatabaseAsync('monopoly.db');
-      let result = await db.getAllAsync('SELECT Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre FROM FilanaIsambolana');
+      let result = await db.getAllAsync(`SELECT Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre FROM FilanaIsambolana WHERE MpamokatraId=${id}`);
 
       for (let i = 0; i < result.length; i++) {
           for (let key in result[i]) { // Parcourir les propriétés de chaque objet
