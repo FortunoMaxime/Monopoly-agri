@@ -15,7 +15,7 @@ const HomeScreen = () => {
 
   const [people, setPeople] = useState([]);
   const [id, setId] = useState('');
-
+  recupereDonnees();
 
   async function recupereDonnees() {
     try {
@@ -33,9 +33,7 @@ const HomeScreen = () => {
   
   
 
-  useEffect(() => {
-    recupereDonnees();
-  }, []);
+
 
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false); // State pour la visibilité du modal
@@ -90,16 +88,26 @@ const HomeScreen = () => {
     setModalVisible(false);
     console.log("Navigating to Kilalao screen with item ID:", id);
   };
-  const  makanyexel= () => {
-    navigation.navigate('Import');
+  const  makanyexel= (id) => {
+    navigation.navigate('Import',{ itemId: id });
     setModalVisible1(false);
     
   };
-  const handleNavigateToFamakafakana = () => {
-    navigation.navigate('Famakafakana');
-    console.log("Performing a new action");
+  const  makanyvaovao= (id) => {
+    navigation.navigate('Vaovao',{ itemId: id });
+    setModalVisible1(false);
+    
   };
-
+  const handleNavigateTanana = () => {
+    navigation.navigate('Pagination');
+    setModalVisible1(false); 
+    
+  };
+  const filterPeople = (query, people) => {
+    if (!query) return people; // Si aucun filtre n'est appliqué, retournez toutes les personnes
+  
+    return people.filter(person => person.Anarana.toLowerCase().includes(query.toLowerCase()));
+  };
 
   return (
     <View style={styles.container}>
@@ -118,9 +126,9 @@ const HomeScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.modalButton} onPress={() => handleNavigateToInterfaceData(id)}>
               <Ionicons name="create-outline" size={24} style={styles.buttonIcon} />
-              <Text style={styles.modalButtonText}>AGE</Text>
+              <Text style={styles.modalButtonText}>A.G.E</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => makanyexel()}>
+            <TouchableOpacity style={styles.modalButton} onPress={() => makanyvaovao()}>
               <Ionicons name="add-circle-outline" size={24} style={styles.buttonIcon} />
               <Text style={styles.modalButtonText}>Kilalao vaovao</Text>
             </TouchableOpacity>
@@ -144,7 +152,7 @@ const HomeScreen = () => {
             <TouchableOpacity style={styles.closeButton} onPress={handleCloseModal1}>
               <Ionicons name="close" size={24} color="#333" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => handleNavigateToFamakafakana()}>
+            <TouchableOpacity style={styles.modalButton} onPress={() => handleNavigateTanana()}>
               <Ionicons name="create-outline" size={24} style={styles.buttonIcon} />
               <Text style={styles.modalButtonText}>Apidirina tanana</Text>
             </TouchableOpacity>
@@ -161,12 +169,12 @@ const HomeScreen = () => {
         <Text style={styles.headerTitle}>Kilalaom-pitatanana</Text>
       </View>
       <View style={styles.listContainerTitle}>
-      <Text style={[styles.listTitle,{ fontSize: listTitleFontSize }]}>LISITRY NY MPAMBOLY EFA NANAOVANA MONOPOLY</Text>
+      <Text style={[styles.listTitle,{ fontSize: listTitleFontSize }]}>LISITRY NY MPAMBOLY EFA NANAOVANA A.G.E</Text>
       </View>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Recherche"
+          placeholder="Hitady"
           placeholderTextColor="#999"
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -174,7 +182,7 @@ const HomeScreen = () => {
         <Ionicons name="search" size={24} color="#68B684" style={styles.searchIcon} />
       </View>
       <FlatList
-        data={people}
+         data={filterPeople(searchQuery, people)}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.item} onPress={() => handleOpenModal(item.id)}>
             <Ionicons name="person-circle-outline" size={40} color="#68B684" />

@@ -1,14 +1,14 @@
-import * as SQLite from 'expo-sqlite';
-
+imOport * as SQLite from 'expo-sqlite';
+OA
 // Fonction principale pour initialiser la base de données
-const initDatabase = async () => {
-  const db = await SQLite.openDatabaseAsync('monopoly.db');
-  // Ouvrir la base de données de manière asynchrone
+const initOOOADatabase = async () => {
+  cOOOOOOOonst db = await SQLite.openDatabaseAsync('monopoly.db');
+OBO  // Ouvrir la base de données de manière asynchrone
   // Activer les clés étrangères en utilisant une transaction
   await db.execAsync('PRAGMA foreign_keys = ON;');
-  console.log('Foreign keys turned on');
+ O console.log('Foreign keys turned on');
   alert('Foreign keys turned on');
-
+O
   const createTables = async () => {
     await db.execAsync(`
     CREATE TABLE IF NOT EXISTS Mpamokatra (
@@ -346,13 +346,13 @@ const addForeignKey = async (tableName, columnName, referencedTableName, referen
 const insertDonneexel = async (data,table,id) => {
   const db = await SQLite.openDatabaseAsync('monopoly.db'); // Ouvrir la base de données
   const sql = `INSERT INTO ${table} (Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre,MpamokatraId)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
 
   try {
     // Parcourir les données à partir de la 4ème ligne et ignorer la dernière ligne
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
-       
+      row.push(id);
       const params = [
         row[0],  // Karazany
         row[1],  // Janvier
@@ -367,7 +367,7 @@ const insertDonneexel = async (data,table,id) => {
         row[10], // Octobre
         row[11], // Novembre
         row[12] ,
-        id , // Decembre (la dernière colonne n'est pas incluse)
+        row[13]  // Decembre (la dernière colonne n'est pas incluse)
       ];
 
       // Exécuter l'instruction SQL pour chaque ligne
@@ -386,11 +386,11 @@ async function insertFandanianaData(data, nomtable,mpamokatraid) {
 
   for (let i = 0; i < data.length; i++) {
     const values = data[i];
-   // values.push(mpamokatraid);
+    values.push(mpamokatraid);
     try {
       await db.runAsync(`
-        INSERT INTO ${nomtable}(Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre,MpamokatraId) 
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,${mpamokatraid})`,
+        INSERT INTO ${nomtable}(Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre, MpamokatraId) 
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         values.join(',') // Spécifiez ',' comme délimiteur
       );
     } catch (error) {
@@ -403,14 +403,13 @@ async function insertTotaly(data, nomtable,mpamokatraid) {
 
   for (let i = 0; i < data.length; i++) {
     const values = data[i];
-   // values.push(mpamokatraid);
+    values.push(mpamokatraid);
     try {
       await db.runAsync(`
-        INSERT INTO ${nomtable}(Etiquete, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre) 
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        INSERT INTO ${nomtable}(Etiquete, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre, MpamokatraId) 
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         values.join(',') // Spécifiez ',' comme délimiteur
       );
-      alert(`Les données ont été insérées avec succès.`,nomtable);
     } catch (error) {
       console.error("Erreur lors de l'insertion des données:", error);
     }
@@ -446,7 +445,7 @@ const insertDonneFandanina = async (data,table,mpamokatraid) => {
     // Parcourir les données à partir de la 4ème ligne et ignorer la dernière ligne
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
-    //  row.push(mpamokatraid);
+      row.push(mpamokatraid);
    
       const params = [
         row[0],  // Karazany
@@ -462,8 +461,7 @@ const insertDonneFandanina = async (data,table,mpamokatraid) => {
         row[10], // Octobre
         row[11], // Novembre
         row[12],
-        mpamokatraid,
-     //   row[13]  // Decembre (la dernière colonne n'est pas incluse)
+        row[13]  // Decembre (la dernière colonne n'est pas incluse)
       ];
 
       // Exécuter l'instruction SQL pour chaque ligne
@@ -502,7 +500,6 @@ const insertdonnetable = async (data,table,mpamokatraid) => {
         row[10], // Octobre
         row[11], // Novembre
         row[12] ,
-        mpamokatraid,
       ];
 
       // Exécuter l'instruction SQL pour chaque ligne

@@ -2,29 +2,21 @@
 import React, { useState ,useEffect} from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { saveDataToTable, getLastId, saveDataKey,insertDonneexel,insertFandanianaData,insertVokatraData } from './database';
-import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 
-import { useNavigation } from '@react-navigation/native'; 
 
-const Famakafakana = ({}) => {
-    const [lastId, setLastId] = useState('');
-  const navigation = useNavigation(); 
-  const [panel1Visible, setPanel1Visible] = useState(false);
+const Vaovao = ({}) => {
+  const route = useRoute();
+  const { itemId } = route.params;
+
   const [panel2Visible, setPanel2Visible] = useState(false);
   const [panel3Visible, setPanel3Visible] = useState(false);
   const [panel4Visible, setPanel4Visible] = useState(false);
   const [panel5Visible, setPanel5Visible] = useState(false);
 
-  const [panelrehetre, setPanelrehetra] = useState(false);
   const [text, setText] = useState('');
   
-  const [anaranaSyFanampiny, setAnaranaSyFanampiny] = useState('');
-  const [manambadySaTsia, setManambadySaTsia] = useState('');
-  const [toerana, setToerana] = useState('');
-  const [kaominina, setKaominina] = useState('');
-  const [fokotany, setFokotany] = useState('');
 
   const [serampihariana, setSerampihariana] = useState('');
 const [velaranaisa, setVelaranaisa] = useState('');
@@ -44,64 +36,11 @@ const [adiresy, setAdiresy] = useState('');
 const [tel, setTel] = useState('');
 const [efaHiaraMiasa, setEfaHiaraMiasa] = useState('');
 
-const [nom, setnom] = useState('');
-
-const [image, setImage] = useState(null); // Déplacez cette ligne ici
-
-const [filefilana, setFilefilana] = useState('');
-const [filefikirakirana, setFilefikirakirana] = useState('');
-
 
 const [clickCount, setClickCount] = useState(0);
 const [clickfitaovampamokarana, setclikFitaova] = useState(0);
 const [clickmanodidina, setClickmanodidina] = useState(0);
 const [clickfanamarihana, setClickfanamarihana] = useState(0);
-
-
-const fetchLastId = async () => {
-  try {
-    const id = await getLastId('Mpamokatra');
-    setLastId(id);
-    console.log('Dernier ID:', id);
-  } catch (error) {
-    console.error('Erreur:', error);
-  }
-};
-
-
-
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [4, 3],
-    quality: 1,
-  });
-    console.log(result);
-    if (!result.canceled) {
-      const base64Image =result.assets[0].uri
-      setImage(base64Image);
-    }
-  };
-  //Maka valeur ana champs de texte
-
-  const handleSubmitPanel1 = () => {
-    setPanelrehetra(!panelrehetre);
-    const data = {
-       Anarana: anaranaSyFanampiny,
-       Manambady: manambadySaTsia,
-       Toerana: toerana,
-       Kaominina: kaominina,
-       Fokotany: fokotany,
-       ImageBase64:image,
-    };
-   
-    saveDataToTable('Mpamokatra', data);
-    fetchLastId();
-   };
-   
-
 
 const handleSubmitPanel2 = () => {
   
@@ -113,7 +52,7 @@ const handleSubmitPanel2 = () => {
     VokatraKg: vokatra,
     VolanaNambolena:volananambolena,
     VolanaNamokarana:volananiakarana,
-    MpamokatraId:lastId,
+    MpamokatraId:itemId,
  };
 
  saveDataKey('Famokarana', data);
@@ -125,7 +64,7 @@ const handleSubmitPanel3 = () => {
   const data = {
   Fitaovampamokarana: fitaovampamokarana,
   Isa: isa,
-  MpamokatraId:lastId,
+  MpamokatraId:itemId,
   };
   saveDataKey('Fitaovampamokarana',data);
   setclikFitaova(clickfitaovampamokarana + 1);
@@ -140,37 +79,23 @@ const handleSubmitPanel3 = () => {
     Adiresy: adiresy,
     Tel: tel,
     Efahiaramiasa: efaHiaraMiasa,
-    MpamokatraId:lastId,
+    MpamokatraId:itemId,
  };
 
  saveDataKey('ManodidinaFamokarana', data);
- setClickmanodidina(clickmanodidina + 1);
+ setClickmanodidina(clickmanodidina+ 1);
 };
 
  
  const handleSubmitPanel5 = () => {
   const data={
     Fanamarihana:text,
-    MpamokatraId:lastId,
+    MpamokatraId:itemId,
   };
   saveDataKey('Fanamarihana',data);
   setClickfanamarihana(clickfanamarihana + 1);
 };
 
-
-//tapitra eto
-const handleNavigateEntrerManuel = () => {
-  navigation.navigate('ExcelSimulator');
-  console.log("Performing a new action");
-};
-  const handleTextChange = newText => {
-    setText(newText);
-  };
-
-  const togglePanel1 = () => {
-    setPanel1Visible(!panel1Visible);
-
-  };
 
   const togglePanel2 = () => {
     setPanel2Visible(!panel2Visible);
@@ -189,68 +114,15 @@ const handleNavigateEntrerManuel = () => {
   return (
     <SafeAreaView style={styles.container}>
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      <TouchableOpacity style={styles.panel} onPress={togglePanel1}>
-      <Text style={{ fontSize: 20}}>Ny Mpamokatra</Text>
-      </TouchableOpacity>
-
-      {panel1Visible && (
-  <View style={styles.panel}>
-    <View style={styles.inter}>
-    <TouchableOpacity style={[styles.floatingButton]} onPress={pickImage}>
-    <Ionicons name="person-circle-outline" size={100} color="#68B684" />
-    {image && <Image source={{ uri: image }} style={styles.floatingButtonImg} />}
-    </TouchableOpacity>
-    <View style={styles.iner}>
-    <Text style={styles.label}>Anarana sy fanampiny:</Text>
-      
-      <TextInput
-            style={styles.input}
-            onChangeText={setAnaranaSyFanampiny}
-            value={anaranaSyFanampiny}
-          />
-          <Text style={styles.label}>Manambady sa tsia:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setManambadySaTsia}
-            value={manambadySaTsia}
-          />
-          <Text style={styles.label}>Toerana:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setToerana}
-            value={toerana}
-          />
-          <Text style={styles.label}>Kaominina:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setKaominina}
-            value={kaominina}
-          />
-          <Text style={styles.label}>Fokotany:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setFokotany}
-            value={fokotany}
-          />
-           <TouchableOpacity style={styles.submitButton} onPress={handleSubmitPanel1}>
-            <Text style={styles.submitButtonText}>Raiketina</Text>
-          </TouchableOpacity>
-      </View>
-    </View>
-    </View>
-)}
-
-      <View style={styles.space} />
 
       <TouchableOpacity style={styles.panelmisisa} onPress={togglePanel2}>
       <Text style={{ fontSize: 20 }}>
-          Famokarana:
-         
+          Famokarana
         </Text>
-        <Text style={{ marginTop:'-3%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
+        <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
       </TouchableOpacity>
 
-              {panel2Visible && panelrehetre && (
+              {panel2Visible &&  (
           <View style={styles.panel}>
             <View style={styles.inter}>
               <View style={styles.form}>
@@ -319,10 +191,10 @@ const handleNavigateEntrerManuel = () => {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel3}>
       <Text style={{  fontSize: 20}}>Fitaovampamokarana</Text>
-      <Text style={{ marginTop:'-4%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfitaovampamokarana}</Text>
+      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfitaovampamokarana}</Text>
       </TouchableOpacity>
 
-      {panel3Visible && panelrehetre &&(
+      {panel3Visible && (
  <View style={styles.panel}>
     <View style={styles.inter}>
       <View style={styles.form}>
@@ -351,10 +223,10 @@ const handleNavigateEntrerManuel = () => {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel4}>
       <Text style={{ fontSize: 20}}>Manodidina ny famokarana</Text>
-      <Text style={{ marginTop:'-4%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickmanodidina}</Text>
+      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickmanodidina}</Text>
       </TouchableOpacity>
 
-      {panel4Visible && panelrehetre && (
+      {panel4Visible &&  (
  <View style={styles.panel}>
     <View style={styles.inter}>
       <View style={styles.form}>
@@ -399,9 +271,9 @@ const handleNavigateEntrerManuel = () => {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel5}>
       <Text style={{ fontSize: 20}}>Fanamarihanamanodidina ny toeram-pamokarana</Text>
-      <Text style={{ marginTop:'-4%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfanamarihana}</Text>
+      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfanamarihana}</Text>
       </TouchableOpacity>
-      {panel5Visible && panelrehetre &&(
+      {panel5Visible && (
  <View style={styles.panel}>
     <View style={styles.inter}>
       
@@ -421,7 +293,8 @@ const handleNavigateEntrerManuel = () => {
     </View>
  </View>
 )}
-      <View style={styles.spacebe} />
+
+        <View style={styles.spacebe} />
       </ScrollView>
  </SafeAreaView>
   );
@@ -596,21 +469,7 @@ const styles = {
     shadowRadius: 3.84,
     elevation: 5,
   },
-  excelimage: {
-    width: 100,
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin:20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: '2',
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
+
  rowray: {
     flexDirection: 'column',
     flex:1,
@@ -622,4 +481,4 @@ const styles = {
   },
 };
 
-  export default Famakafakana;
+  export default Vaovao;
