@@ -18,12 +18,12 @@ const Courbe = () => {
   const [maxFidirana, setMaxFidirana] = useState(null);
   const [MoisMaxFidirana, setMoisMaxFidirana] = useState(null);
   const [karazanyMaxFidirana, setKarazanyMaxFidirana] = useState(null);
-
   const [Maxligne, setMaxligne] = useState(null);
   const [karazanyValeurligne, setKarazanyligne] = useState(null);
-
-  const [MaxligneFidirana, setMaxligneFidirana] = useState(null);
   const [karazanyligneFidirana, setKarazanyligneFidirana] = useState(null);
+  
+  const [MaxligneFidirana, setMaxligneFidirana] = useState(null);
+
 
   useEffect(() => {
     const initializeDB = async () => {
@@ -42,19 +42,22 @@ const Courbe = () => {
   const fetchData = useCallback(async () => {
     await recupereDonnees1(itemId);
     await recupereDonnees2(itemId);
-   
+
   }, [itemId]);
 
-  useEffect(async() => {
-    await recupereDonneesFandanina(itemId);
-    await recupereDonneesFidiralbola(itemId);
-  }, [fidirana,fandanina]);
+  useEffect(() => {
+    const fetchAdditionalData = async () => {
+      await recupereDonneesFandanina(itemId);
+      await recupereDonneesFidiralbola(itemId);
+    };
+    fetchAdditionalData();
+  }, [fidirana, fandanina]);
 
   const recupereDonneesFandanina = async (id) => {
-    try {
+  try {
       const db = await SQLite.openDatabaseAsync('monopoly.db');
       let result = await db.getAllAsync(`SELECT Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre FROM Fandaniana WHERE MpamokatraId=${id}`);
-
+      console.log('ito le reslult ndray',result);
       for (let i = 0; i < result.length; i++) {
         for (let key in result[i]) {
           if (result[i][key] === "") {
@@ -62,7 +65,7 @@ const Courbe = () => {
           }
         }
       }
-      console.log('result ito', result);
+     // console.log('result ito', result);
 
       const processedData = result.map(row => [
         row.Karazany, row.Janvier, row.Fevrier, row.Mars, row.Avril, row.Mai, row.Juin, row.Juillet, row.Aout, row.Sepetembre, row.Octobre, row.Novembre, row.Descembre,

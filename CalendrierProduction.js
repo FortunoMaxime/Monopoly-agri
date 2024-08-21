@@ -7,23 +7,26 @@ import * as SQLite from 'expo-sqlite';
 import * as d3 from 'd3';
 
 const CalendrierProduction = () => {
+
+  const route = useRoute();
+  const { itemId } = route.params;
+  console.log('ito le last',itemId);
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const svgWidth = screenWidth - 40; // Par exemple, en laissant une marge de 20 de chaque côté
   const svgHeight = screenHeight - 100; // Par exemple, en laissant une marge en haut et en bas
   const [resultfamokarana, setResultfamokarana] = useState([]);
 
 
-  const route = useRoute();
-  const { lastId } = route.params;
 
   useEffect(() => {
-      recupereFamokarana(lastId);
-  }, [lastId]);
+      recupereFamokarana(itemId);
+  }, [itemId]);
 
   const recupereFamokarana = async (lastId) => {
     const db = await SQLite.openDatabaseAsync('monopoly.db');
+     
     try {
-      const result = await db.getAllAsync(`SELECT Sehapihariana,VolanaNambolena,VolanaNamokarana FROM Famokarana WHERe MpamokatraId=${lastId}`);
+      const result = await db.getAllAsync(`SELECT Sehapihariana,VolanaNambolena,VolanaNamokarana FROM Famokarana WHERE MpamokatraId=${itemId}`);
       setResultfamokarana(result);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);

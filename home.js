@@ -31,9 +31,6 @@ const HomeScreen = () => {
     }
   }
   
-  
-
-
 
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false); // State pour la visibilité du modal
@@ -95,7 +92,7 @@ const HomeScreen = () => {
   };
   const  makanyvaovao= (id) => {
     navigation.navigate('Vaovao',{ itemId: id });
-    setModalVisible1(false);
+    setModalVisible(false);
     
   };
   const handleNavigateTanana = () => {
@@ -128,13 +125,13 @@ const HomeScreen = () => {
               <Ionicons name="create-outline" size={24} style={styles.buttonIcon} />
               <Text style={styles.modalButtonText}>A.G.E</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => makanyvaovao()}>
-              <Ionicons name="add-circle-outline" size={24} style={styles.buttonIcon} />
-              <Text style={styles.modalButtonText}>Kilalao vaovao</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => handleNavigateToKilalao(id)}>
+            <TouchableOpacity style={styles.modalButton} onPress={() => makanyvaovao(id)}>
               <Ionicons name="time-outline" size={24} style={styles.buttonIcon} />
               <Text style={styles.modalButtonText}>Kilalao taloha</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={() => handleNavigateToKilalao(id)}>
+              <Ionicons name="add-circle-outline" size={24} style={styles.buttonIcon} />
+              <Text style={styles.modalButtonText}>Kilalao vaovao</Text>
             </TouchableOpacity>
           </View>
         </View>

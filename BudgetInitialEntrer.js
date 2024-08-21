@@ -3,9 +3,14 @@ import { StyleSheet, View, TextInput, ScrollView,  Text,TouchableOpacity,Button 
 import { DataTable } from 'react-native-paper';
 import { copyColumnData,getLastId,insertDonneFandanina,insertDonneexel,insertTotaly} from './database';
 import { Ionicons } from '@expo/vector-icons';
+import * as SQLite from 'expo-sqlite';
+import AlertCustom from './AlertCustom'; 
+import Alerttsmety from './Alerttsmety'; 
 
 const BudgetInitialEntrer = ({ navigation }) => {
   const [nom, setNom] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [showTsymety, setShowTsymety] = useState(false);
   const [data, setData] = useState([
       ['Karazany', 'Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Desambra', 'Totaly'],
   ]);
@@ -37,8 +42,22 @@ const [TotaltyFidirana, setFidirana] = useState([
           .then(id => copyColumnData('Famokarana', 'Sehapihariana', id))
           .then(columnData => setNom(columnData))
           .catch(error => console.error('Erreur:', error));
-  }, []);
 
+    getLastId('Mpamokatra')
+          .then(id => {
+              console.log('Dernier ID:', id);
+              return id;
+          })
+          .then(id =>recupereDonnees1(id))
+          .catch(error => console.error('Erreur:', error));
+  }, []);
+  useEffect(() => {
+    const result = andranavolafarany(TotaltyFandanina,TotaltyFidirana,data2);
+    console.log('result',result);
+    const combinedData = [ data3[0], [...result] ];
+    setData3(combinedData);
+      console.log('comine',combinedData);
+}, [ TotaltyFidirana, TotaltyFandanina]);
   useEffect(() => {
       if (nom && nom.length > 0) {
           for (let i = 0; i < nom.length; i++) {
@@ -54,7 +73,6 @@ const [TotaltyFidirana, setFidirana] = useState([
   }, [nom]);
   useEffect(() => {
     updateTotaltyFandanina();
-  
   }, [data]);
 
   useEffect(() => {
@@ -65,6 +83,20 @@ const [TotaltyFidirana, setFidirana] = useState([
   useEffect(() => {
     updateData2();
 }, [data3, TotaltyFidirana, TotaltyFandanina]);
+useEffect(() => {
+    if (showAlert) {
+      setTimeout(() => {
+        setShowAlert(false); 
+      }, 3000);
+    }
+  }, [showAlert]);
+useEffect(() => {
+    const result = andranavolafarany(TotaltyFandanina,TotaltyFidirana,data2);
+    console.log('result',result);
+    const combinedData = [ data3[0], [...result] ];
+    setData3(combinedData);
+      console.log('comine',combinedData);
+}, [ TotaltyFidirana, TotaltyFandanina]);
 
 const retrieveData = async(table,nomtable) => {
     const result=table.slice(1);
@@ -82,6 +114,7 @@ function toutenregistrer() {
      retrieveData(data1,'Fidirambola');
      retrieveAutre(TotaltyFandanina,'TotalyFandaniana');
      retrieveAutre(TotaltyFidirana,'TotalyFidirana');
+     setShowAlert(true);
 }
 
   function handleCellChange(rowIndex, cellIndex, newText) {
@@ -195,6 +228,35 @@ function addRow1() {
         });
     });
 }
+const recupereDonnees1 = async (id) => {
+    try {
+        const db = await SQLite.openDatabaseAsync('monopoly.db');
+        let result = await db.getAllAsync(`SELECT Karazany, Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Sepetembre, Octobre, Novembre, Descembre FROM FilanaIsambolana WHERE MpamokatraId=${id}`);
+
+        for (let i = 0; i < result.length; i++) {
+            for (let key in result[i]) { // Parcourir les propriétés de chaque objet
+                if (result[i][key] === ""|| result[i][key] === null) {
+                    result[i][key] = 0; // Remplacer les valeurs vides par 0
+                }
+            }
+        }
+
+        console.log('result ito', result);
+        
+        const processedData = result.map(row => [
+            row.Karazany, row.Janvier, row.Fevrier, row.Mars, row.Avril, row.Mai, row.Juin, row.Juillet, row.Aout, row.Sepetembre, row.Octobre, row.Novembre, row.Descembre,
+            // Calculer le total pour chaque ligne
+            Object.values(row).slice(1).reduce((acc, val) => acc + parseInt(val, 10), 0).toString()
+        ]);
+
+        // Ajouter processedData à la dernière ligne de data1
+        const combinedData = [...data1, ...processedData];
+        setData(combinedData);
+
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+    }
+};
 
 function updateData2() {
     const months = ['Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Descembra'];
@@ -218,7 +280,40 @@ function updateData2() {
     });
 }
 
+   function andranavolafarany(TotaltyFandanina,TotaltyFidirana,data2){
 
+    const retournena = [];
+    const tenaretourne = [];
+    console.log('fandanina',TotaltyFidirana[0]);
+    
+      for (let i = 0; i < TotaltyFandanina.length; i++) {
+        const row = TotaltyFandanina[i];
+        const row1 = TotaltyFidirana[i];
+     
+        for (let j = 1; j < row.length; j++) {
+          retournena.push(row1[j] - row[j]);
+        }
+      }
+    retournena.pop();
+    console.log('retournena',retournena);
+    const data2tsisentete = data2.slice(1).map(row => {
+        return row.map(val => {
+            // Utilisation de parseInt pour transformer en chiffre
+            const num = parseInt(val);
+            // Vérification si c'est une chaîne vide
+            return isNaN(num) ? 0 : num;
+        });
+    });
+    const tenavaleu2=data2tsisentete[0];
+console.log(tenavaleu2);
+
+    for (let i = 0; i < retournena.length; i++) {
+        const sum = retournena[i] + tenavaleu2[i];
+        tenaretourne.push(sum);
+    }
+    return tenaretourne;
+  
+}
 
 function updateTotaltyFandanina() {
     const totals = data[0].map((_, columnIndex) => {
@@ -242,7 +337,40 @@ function updateTotaltyFidirana() {
     });
     setFidirana([totals]);
 }
+function andranavolafarany(TotaltyFandanina,TotaltyFidirana,data2){
 
+    const retournena = [];
+    const tenaretourne = [];
+    console.log('fandanina',TotaltyFidirana[0]);
+    
+      for (let i = 0; i < TotaltyFandanina.length; i++) {
+        const row = TotaltyFandanina[i];
+        const row1 = TotaltyFidirana[i];
+     
+        for (let j = 1; j < row.length; j++) {
+          retournena.push(row1[j] - row[j]);
+        }
+      }
+    retournena.pop();
+    console.log('retournena',retournena);
+    const data2tsisentete = data2.slice(1).map(row => {
+        return row.map(val => {
+            // Utilisation de parseInt pour transformer en chiffre
+            const num = parseInt(val);
+            // Vérification si c'est une chaîne vide
+            return isNaN(num) ? 0 : num;
+        });
+    });
+    const tenavaleu2=data2tsisentete[0];
+console.log(tenavaleu2);
+
+    for (let i = 0; i < retournena.length; i++) {
+        const sum = retournena[i] + tenavaleu2[i];
+        tenaretourne.push(sum);
+    }
+    return tenaretourne;
+  
+}
  
 
   return (
@@ -422,6 +550,8 @@ function updateTotaltyFidirana() {
           </ScrollView>
           <View style={styles.spacekely} />
           <Button title="Tahirizina" onPress={toutenregistrer} />
+          {showAlert && <AlertCustom title="Tafiditra " message="Tafiditra soamatsara " onOk={() => console.log('OK Pressed')} />}
+
           <View style={styles.space} />
       </ScrollView>
   );

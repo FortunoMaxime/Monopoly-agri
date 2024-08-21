@@ -1,8 +1,9 @@
 
-import React, { useState ,useEffect} from 'react';
+import React, { useState ,useEffect,useCallback} from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import * as SQLite from 'expo-sqlite';
 import { saveDataToTable, getLastId, saveDataKey,insertDonneexel,insertFandanianaData,insertVokatraData } from './database';
 
 
@@ -10,6 +11,8 @@ const Vaovao = ({}) => {
   const route = useRoute();
   const { itemId } = route.params;
 
+  const [db, setDb] = useState(null);
+  const [panel1Visible, setPanel1Visible] = useState(false);
   const [panel2Visible, setPanel2Visible] = useState(false);
   const [panel3Visible, setPanel3Visible] = useState(false);
   const [panel4Visible, setPanel4Visible] = useState(false);
@@ -17,6 +20,11 @@ const Vaovao = ({}) => {
 
   const [text, setText] = useState('');
   
+  const [anaranaSyFanampiny, setAnaranaSyFanampiny] = useState('');
+  const [manambadySaTsia, setManambadySaTsia] = useState('');
+  const [toerana, setToerana] = useState('');
+  const [kaominina, setKaominina] = useState('');
+  const [fokotany, setFokotany] = useState('');
 
   const [serampihariana, setSerampihariana] = useState('');
 const [velaranaisa, setVelaranaisa] = useState('');
@@ -42,6 +50,94 @@ const [clickfitaovampamokarana, setclikFitaova] = useState(0);
 const [clickmanodidina, setClickmanodidina] = useState(0);
 const [clickfanamarihana, setClickfanamarihana] = useState(0);
 
+useEffect(() => {
+  const initializeDB = async () => {
+    const db = await SQLite.openDatabaseAsync('monopoly.db');
+    setDb(db);
+  };
+  initializeDB();
+}, []);
+useEffect(() => {
+  if (db) {
+    fetchData();
+  }
+}, [db]);
+const fetchData = useCallback(async () => {
+  await recupereDonnees(itemId);
+  await recupereFamokarana(itemId);
+  await recupereFitaovampamokarana(itemId);
+  await recupereManodidina(itemId);
+  await recupereFanamarihana(itemId);
+}, [itemId, db]);
+
+const recupereDonnees = async (id) => {
+  try {
+    const result = await db.getAllAsync(`SELECT id, Anarana, Manambady, Toerana, Kaominina, Fokotany FROM Mpamokatra WHERE id = ?`, [id]);
+    //setPeople(result);
+   // setEditValues(result[0]); // Initialiser les valeurs d'édition avec les valeurs actuelles
+   console.log("Mpamokatra ",result);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données:', error);
+  }
+};
+
+
+const recupereFamokarana = async (id) => {
+  try {
+    const result = await db.getAllAsync('SELECT * FROM Famokarana WHERE MpamokatraId = ?', [id]);
+   // setFamokarana(result);
+   console.log("1 ",result);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données:', error);
+  }
+};
+
+const recupereFitaovampamokarana = async (id) => {
+  try {
+    const result = await db.getAllAsync('SELECT * FROM Fitaovampamokarana WHERE MpamokatraId = ?', [id]);
+   // setFitaovana(result);
+   console.log(" 2",result);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données:', error);
+  }
+};
+
+const recupereManodidina = async (id) => {
+  try {
+    const result = await db.getAllAsync('SELECT * FROM ManodidinaFamokarana WHERE MpamokatraId = ?', [id]);
+    //setManodidina(result);
+    console.log("3 ",result);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données:', error);
+  }
+};
+
+const recupereFanamarihana = async (id) => {
+  try {
+    const result = await db.getAllAsync('SELECT * FROM Fanamarihana WHERE MpamokatraId = ?', [id]);
+  //  setFanamarihana(result);
+  console.log("4 ",result);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données:', error);
+  }
+};
+const handleSubmitPanel1 = () => {
+  setPanelrehetra(!panelrehetre);
+  const data = {
+     Anarana: anaranaSyFanampiny,
+     Manambady: manambadySaTsia,
+     Toerana: toerana,
+     Kaominina: kaominina,
+     Fokotany: fokotany,
+     ImageBase64:image,
+  };
+ 
+  saveDataToTable('Mpamokatra', data);
+  setShowAlert(true);
+
+ };
+ 
+
 const handleSubmitPanel2 = () => {
   
   const data = {
@@ -57,6 +153,7 @@ const handleSubmitPanel2 = () => {
 
  saveDataKey('Famokarana', data);
  setClickCount(clickCount + 1);
+
 };
 
 
@@ -99,6 +196,7 @@ const handleSubmitPanel3 = () => {
 
   const togglePanel2 = () => {
     setPanel2Visible(!panel2Visible);
+   // console.log("ito"+itemId);
   };
 
   const togglePanel3 = () => {
@@ -114,12 +212,12 @@ const handleSubmitPanel3 = () => {
   return (
     <SafeAreaView style={styles.container}>
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-
+   
       <TouchableOpacity style={styles.panelmisisa} onPress={togglePanel2}>
       <Text style={{ fontSize: 20 }}>
           Famokarana
         </Text>
-        <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
+        <Text style={{ marginTop:'-5%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
       </TouchableOpacity>
 
               {panel2Visible &&  (
@@ -191,7 +289,7 @@ const handleSubmitPanel3 = () => {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel3}>
       <Text style={{  fontSize: 20}}>Fitaovampamokarana</Text>
-      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfitaovampamokarana}</Text>
+      <Text style={{ marginTop:'-5%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfitaovampamokarana}</Text>
       </TouchableOpacity>
 
       {panel3Visible && (
@@ -223,7 +321,7 @@ const handleSubmitPanel3 = () => {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel4}>
       <Text style={{ fontSize: 20}}>Manodidina ny famokarana</Text>
-      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickmanodidina}</Text>
+      <Text style={{ marginTop:'-5%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickmanodidina}</Text>
       </TouchableOpacity>
 
       {panel4Visible &&  (
@@ -271,7 +369,7 @@ const handleSubmitPanel3 = () => {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel5}>
       <Text style={{ fontSize: 20}}>Fanamarihanamanodidina ny toeram-pamokarana</Text>
-      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfanamarihana}</Text>
+      <Text style={{ marginTop:'-5%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfanamarihana}</Text>
       </TouchableOpacity>
       {panel5Visible && (
  <View style={styles.panel}>

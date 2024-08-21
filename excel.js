@@ -17,6 +17,7 @@ const Import = ({}) => {
   const [showTsymety, setShowTsymety] = useState(false);
     const [lastId, setLastId] = useState('');
   const navigation = useNavigation(); 
+  
   const [panel1Visible, setPanel1Visible] = useState(false);
   const [panel2Visible, setPanel2Visible] = useState(false);
   const [panel3Visible, setPanel3Visible] = useState(false);
@@ -166,9 +167,6 @@ const handleSubmitPanel3 = () => {
   saveDataKey('Fanamarihana',data);
   setClickfanamarihana(clickfanamarihana + 1);
 };
-
-
-
 
 //tapitra eto
 const handleNavigateEntrerManuel = () => {
@@ -466,7 +464,7 @@ function diviserCalendrier(tableau) {
           Famokarana:
          
         </Text>
-        <Text style={{ marginTop:'-7%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
+        <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
       </TouchableOpacity>
 
               {panel2Visible && panelrehetre && (
@@ -538,7 +536,7 @@ function diviserCalendrier(tableau) {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel3}>
       <Text style={{  fontSize: 20}}>Fitaovampamokarana</Text>
-      <Text style={{ marginTop:'-7%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfitaovampamokarana}</Text>
+      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfitaovampamokarana}</Text>
 
       </TouchableOpacity>
 
@@ -571,7 +569,7 @@ function diviserCalendrier(tableau) {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel4}>
       <Text style={{ fontSize: 20}}>Manodidina ny famokarana</Text>
-      <Text style={{ marginTop:'-7%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickmanodidina}</Text>
+      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickmanodidina}</Text>
       </TouchableOpacity>
 
       {panel4Visible && panelrehetre && (
@@ -619,7 +617,7 @@ function diviserCalendrier(tableau) {
 
       <TouchableOpacity style={styles.panel} onPress={togglePanel5}>
       <Text style={{ fontSize: 20}}>Fanamarihanamanodidina ny toeram-pamokarana</Text>
-      <Text style={{ marginTop:'-7%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfanamarihana}</Text>
+      <Text style={{ marginTop:'-10%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickfanamarihana}</Text>
 
       </TouchableOpacity>
       {panel5Visible && panelrehetre &&(

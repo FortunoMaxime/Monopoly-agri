@@ -3,28 +3,35 @@ import { StyleSheet, View, TextInput, ScrollView, Button, Text, TouchableOpacity
 import { DataTable } from 'react-native-paper';
 import { insertDonneexel, getLastId } from './database';
 import { Ionicons } from '@expo/vector-icons';
+import AlertCustom from './AlertCustom'; 
+import Alerttsmety from './Alerttsmety'; 
 
 
 const ExcelSimulator = ({ navigation }) => {
     const [somme, setsomme] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
     const [data, setData] = useState([
         ['Karazany', 'Janoary', 'Febroary', 'Martsa', 'Aprily', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novambra', 'Desambra', 'Totaly'],
-        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
         ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
     ]);
     const [TotaltyFandanina, setFandanina] = useState([
         ['Totaly','', '', '', '', '', '', '', '', '', '', '', '', ''],
     ]);
-
-
-    const calculateTotalSum = () => {
-        const sum = TotaltyFandanina[0].slice(1).reduce((acc, val) => {
-            const num = parseFloat(val);
-            return acc + (isNaN(num) ? 0 : num);
-        }, 0);
-        setsomme(sum.toString());
-    };
+    useEffect(() => {
+        updateTotaltyFandanina();
+      }, [data]);
+      useEffect(() => {
+        if (showAlert) {
+          setTimeout(() => {
+            setShowAlert(false); 
+          }, 3000);
+        }
+      }, [showAlert]);
+    function toutenregistrer() {
+        retrieveData(data,'FilanaIsambolana');
+        setShowAlert(true);
+   }
+    
     function handleCellChange(rowIndex, cellIndex, newText) {
         if (cellIndex === 0) {
             const newData = [...data];
@@ -60,23 +67,16 @@ const ExcelSimulator = ({ navigation }) => {
             });
         });
     }
-        function updateTotaly() {
-        setData(prevData => {
-            return prevData.map(row => {
-                if (row[0] !== 'Karazany') {
-                    const total = row.slice(1, -1).reduce((acc, val) => {
-                        if (!isNaN(parseFloat(val))) {
-                            return acc + parseFloat(val);
-                        }
-                        return acc;
-                    }, 0);
-                    const updatedRow = [...row];
-                    updatedRow[row.length - 1] = total.toString();
-                    return updatedRow;
-                }
-                return row;
-            });
+    function updateTotaltyFandanina() {
+        const totals = data[0].map((_, columnIndex) => {
+          if (columnIndex === 0) return 'Totaly';
+          const sum = data.slice(1).reduce((acc, row) => {
+            const value = parseFloat(row[columnIndex]);
+            return acc + (isNaN(value) ? 0 : value);
+          }, 0);
+          return sum.toString();
         });
+        setFandanina([totals]);
     }
 
     function addRow() {
@@ -86,15 +86,11 @@ const ExcelSimulator = ({ navigation }) => {
         });
     }
 
-    function retrieveData() {
-        const itemId=getLastId('Mpamokatra')
-        .then(id => {
-            console.log('Dernier ID:', id);
-            return id;
-        })
-        .catch(error => console.error('Erreur:', error));
-        const result=data.slice(1);
-        insertDonneexel(result,'FilanaIsambolana',itemId);
+    const retrieveData = async(table,nomtable) => {
+        const result=table.slice(1);
+        const last= await getLastId('Mpamokatra');
+        console.log(last);
+        insertDonneexel(result,nomtable,last);
     }
 
     return (
@@ -152,7 +148,8 @@ const ExcelSimulator = ({ navigation }) => {
         <TouchableOpacity style={[styles.floatingButton]} onPress={addRow}>
             <Ionicons name="add-circle-outline" size={40} color="#fff" />
             </TouchableOpacity> 
-            <Button title="Raiketina" onPress={retrieveData} />
+            <Button title="Raiketina" onPress={toutenregistrer} />
+            {showAlert && <AlertCustom title="Tafiditra " message="Tafiditra soamatsara ilay Excel" onOk={() => console.log('OK Pressed')} />}
             <View style={styles.space} />
             
         </ScrollView>

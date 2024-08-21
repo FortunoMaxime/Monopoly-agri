@@ -5,11 +5,13 @@ import { SafeAreaView } from 'react-native';
 import { saveDataToTable, getLastId, saveDataKey,insertDonneexel,insertFandanianaData,insertVokatraData } from './database';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import AlertCustom from './AlertCustom'; 
 
 import { useNavigation } from '@react-navigation/native'; 
 
 const Famakafakana = ({}) => {
-    const [lastId, setLastId] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+ 
   const navigation = useNavigation(); 
   const [panel1Visible, setPanel1Visible] = useState(false);
   const [panel2Visible, setPanel2Visible] = useState(false);
@@ -68,7 +70,14 @@ const fetchLastId = async () => {
   }
 };
 
-
+useEffect(() => {
+  if (showAlert) {
+    setTimeout(() => {
+      setShowAlert(false); 
+    }, 3000);
+  }
+}, [showAlert]);
+  const [lastId, setLastId] = useState('');
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -98,6 +107,7 @@ const fetchLastId = async () => {
     };
    
     saveDataToTable('Mpamokatra', data);
+    setShowAlert(true);
     fetchLastId();
    };
    
@@ -117,6 +127,7 @@ const handleSubmitPanel2 = () => {
  };
 
  saveDataKey('Famokarana', data);
+ setShowAlert(true);
  setClickCount(clickCount + 1);
 };
 
@@ -128,6 +139,7 @@ const handleSubmitPanel3 = () => {
   MpamokatraId:lastId,
   };
   saveDataKey('Fitaovampamokarana',data);
+  setShowAlert(true);
   setclikFitaova(clickfitaovampamokarana + 1);
  };
  
@@ -144,6 +156,7 @@ const handleSubmitPanel3 = () => {
  };
 
  saveDataKey('ManodidinaFamokarana', data);
+ setShowAlert(true);
  setClickmanodidina(clickmanodidina + 1);
 };
 
@@ -154,6 +167,7 @@ const handleSubmitPanel3 = () => {
     MpamokatraId:lastId,
   };
   saveDataKey('Fanamarihana',data);
+  setShowAlert(true);
   setClickfanamarihana(clickfanamarihana + 1);
 };
 
@@ -247,7 +261,7 @@ const handleNavigateEntrerManuel = () => {
           Famokarana:
          
         </Text>
-        <Text style={{ marginTop:'-3%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
+        <Text style={{ marginTop:'-4%',fontSize: 20 ,fontWeight: 'bold', marginLeft: '95%' }}>{clickCount}</Text>
       </TouchableOpacity>
 
               {panel2Visible && panelrehetre && (
@@ -417,10 +431,12 @@ const handleNavigateEntrerManuel = () => {
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmitPanel5}>
           <Text style={styles.submitButtonText}>Raiketina</Text>
         </TouchableOpacity>
+        
       </View>
     </View>
  </View>
 )}
+          {showAlert && <AlertCustom title="Tafiditra " message="Tafiditra soamatsara " onOk={() => console.log('OK Pressed')} />}
       <View style={styles.spacebe} />
       </ScrollView>
  </SafeAreaView>

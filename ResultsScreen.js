@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity ,Button} from 'react-native';
-import { copyColumnData,getLastId,insertDonneFandanina,insertDonneexel,insertTotaly,inse} from './database';
+import { copyColumnData,getLastId,insertDonneFandanina,insertDonneexel,insertTotaly,insertFandanianaData} from './database';
 import { DataTable } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -44,31 +44,46 @@ const [TotaltyFidirana, setFidirana] = useState([
 
   
 
-  const retrieveData = async(table,nomtable) => {
-    const result=table.slice(1);     
-    const last= await getLastId('Mpamokatra');
+  const retrieveData = async (table, nomtable) => {
+    const result = table.slice(1); // Enlève la première ligne d'en-têtes
+    const last = await getLastId('Mpamokatra');
     console.log(last);
-    insertFandanianaData(result,nomtable,last);
-}
-const retrieveAutre= async(table,nomtable) =>  {
-    const last= await getLastId('Mpamokatra');
-    console.log(last); 
-    const result=table.slice(1);
-    insertDonneFandanina(result,nomtable,last);
-}
+    // Transforme les données en tableaux imbriqués
+insertFandanianaData(result, nomtable, last);
+   // insertDonneexel(result, nomtable, last);
+  }
+  
+  const retrieveAutre = async (table, nomtable) => {
+    const last = await getLastId('Mpamokatra');
+    console.log(last);
+    // Transforme les données en tableaux imbriqués
+    const result = table.slice(1);
+    const formattedResult = result.map(row => row.map(cell => cell));
+    console.log("Formatted Result for Autre:", formattedResult);
+    insertDonneFandanina(formattedResult, nomtable, last);
+  }
+  
+  
 function toutenregistrer() {
      retrieveData(data,'Fandaniana');
      retrieveData(data1,'Fidirambola');
      retrieveAutre(TotaltyFandanina,'TotalyFandaniana');
      retrieveAutre(TotaltyFidirana,'TotalyFidirana');
 }
-  const recupereDonnees1 = () => {
-    setData([data[0], ...resultats1]);
-    setData1([data1[0], ...resultats2]);
-    setNiakatra([niakatra[0], ...calendrier1]);
-    setNohanina([nohanina[0], ...calendrier2]);
-    setFilana([tenafilana[0], ...filana])
-  };
+const recupereDonnees1 = () => {
+  const formattedResultats1 = resultats1.map(row => row.map(cell => cell));
+  const formattedResultats2 = resultats2.map(row => row.map(cell => cell));
+  const formattedCalendrier1 = calendrier1.map(row => row.map(cell => cell));
+  const formattedCalendrier2 = calendrier2.map(row => row.map(cell => cell));
+  const formattedFilana = filana.map(row => row.map(cell => cell));
+
+  setData([data[0], ...resultats1]);
+  setData1([data1[0], ...resultats2]);
+  setNiakatra([niakatra[0], ...calendrier1]);
+  setNohanina([nohanina[0], ...calendrier2]);
+  setFilana([tenafilana[0], ...filana]);
+};
+
 
   const handleCellChange = (rowIndex, cellIndex, newText) => {
     if (cellIndex === 0 || (cellIndex > 0 && cellIndex < data[0].length - 1 && /^\d+$/.test(newText))) {

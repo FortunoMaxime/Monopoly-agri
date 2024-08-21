@@ -22,12 +22,12 @@ export default function BudgetInitial() {
     ['Karazany', 'Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Desambra', 'Totaly'],
 ]);
 const [data2, setData2] = useState([
-    ['Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Desambra'],
-    ['', '', '', '', '', '', '', '', '', '', '', ''],
+    ['','Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Desambra'],
+    ['','', '', '', '', '', '', '', '', '', '', '', ''],
 ]);
 const [data3, setData3] = useState([
-    ['Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Desambra'],
-    ['', '', '', '', '', '', '', '', '', '', '', ''],
+    ['','Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Desambra'],
+    ['','', '', '', '', '', '', '', '', '', '', '', ''],
 ]);
 
 const [TotaltyFandanina, setFandanina] = useState([
@@ -52,7 +52,7 @@ const handleIconClick = () => {
   useEffect(() => {
     recupereDonnees1(itemId);
     recupereDonnees2(itemId);
- 
+
   }, [itemId]);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ useEffect(() => {
     console.log('result',result);
     const combinedData = [ data3[0], [...result] ];
     setData3(combinedData);
-      console.log('combine',combinedData);
+      console.log('comine',combinedData);
 }, [ TotaltyFidirana, TotaltyFandanina]);
 
 function toggleEditable() {
@@ -87,7 +87,7 @@ const recupereDonnees1 = async (id) => {
 
         for (let i = 0; i < result.length; i++) {
             for (let key in result[i]) { // Parcourir les propriétés de chaque objet
-                if (result[i][key] === "") {
+                if (result[i][key] === ""|| result[i][key] === null) {
                     result[i][key] = 0; // Remplacer les valeurs vides par 0
                 }
                
@@ -116,7 +116,7 @@ const recupereDonnees2 = async (id) => {
         console.log(result);
         for (let i = 0; i < result.length; i++) {
             for (let key in result[i]) { // Parcourir les propriétés de chaque objet
-                if (result[i][key] === "") {
+                if (result[i][key] === ""|| result[i][key] === null) {
                     result[i][key] = 0; // Remplacer les valeurs vides par 0
                 }
              

@@ -9,6 +9,7 @@ const MonComposant = () => {
   const route = useRoute();
   const navigation = useNavigation(); 
   const { itemId } = route.params;
+  console.log(itemId);
 
   const [db, setDb] = useState(null);
   const [people, setPeople] = useState([]);

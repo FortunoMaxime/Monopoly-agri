@@ -2,9 +2,13 @@ import React, { useState,useEffect } from 'react';
 import { StyleSheet, View, TextInput, ScrollView, Button, Text } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { copyColumnData,getLastId} from './database';
+import AlertCustom from './AlertCustom'; 
+import Alerttsmety from './Alerttsmety'; 
 
 const Production = ({ navigation }) => {
   const [nom, setNom] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [showTsymety, setShowTsymety] = useState(false);
   const [data, setData] = useState([
       ['Karazany', 'Janoary', 'Febroary', 'Marsa', 'April', 'May', 'Jona', 'Jolay', 'Aogositra', 'Septembra', 'Oktobra', 'Novembra', 'Descembra', 'Totaly'],
   ]);
@@ -37,6 +41,21 @@ const Production = ({ navigation }) => {
         }
     }
   }, [nom]);
+
+  useEffect(() => {
+    if (showAlert) {
+      setTimeout(() => {
+        setShowAlert(false); 
+      }, 3000);
+    }
+  }, [showAlert]);
+  useEffect(() => {
+    if (showTsymety) {
+      setTimeout(() => {
+        setShowTsymety(false); 
+      }, 3000);
+    }
+  }, [showTsymety]);
   const retrieveData = async(table,nomtable) => {
     const result=table.slice(1);
     const last= await getLastId('Mpamokatra');
@@ -47,6 +66,7 @@ const Production = ({ navigation }) => {
 function toutenregistrer() {
      retrieveData(data,'VokatraNiakatra');
      retrieveData(data1,'VokatraNohanina');
+     setShowAlert(true);
 }
 
   function handleCellChange(rowIndex, cellIndex, newText) {
@@ -196,6 +216,9 @@ function addKarazany1(karazanyValue) {
               </DataTable>
           </ScrollView>
           <Button title="Tahirizina" onPress={toutenregistrer} />
+          {showAlert && <AlertCustom title="Tafiditra " message="Tafiditra soamatsara " onOk={() => console.log('OK Pressed')} />}
+       {showTsymety && <Alerttsmety title="Tsy tafiditra " message="Tsy tafiditra  ilay tahirikevitra nosafidina" onOk={() => console.log('OK Pressed')} />}
+
           <View style={styles.space} />
       </ScrollView>
   );

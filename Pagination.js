@@ -45,8 +45,9 @@ const Pagination = () => {
     >
       <Tab.Screen name="A.G.E" component={Famakafakana} />
       <Tab.Screen name="Kalandrie" component={Production} />
-      <Tab.Screen name="Tetibola voalohany" component={BudgetInitialEntrer} />
       <Tab.Screen name="Filan'ny fianakaviana" component={ExcelSimulator} />
+      <Tab.Screen name="Tetibola voalohany" component={BudgetInitialEntrer} />
+     
     </Tab.Navigator>
   );
 };

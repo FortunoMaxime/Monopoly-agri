@@ -6,8 +6,6 @@ const initDatabase = async () => {
   // Ouvrir la base de données de manière asynchrone
   // Activer les clés étrangères en utilisant une transaction
   await db.execAsync('PRAGMA foreign_keys = ON;');
-  console.log('Foreign keys turned on');
-  alert('Foreign keys turned on');
 
   const createTables = async () => {
     await db.execAsync(`
@@ -216,8 +214,8 @@ CREATE TABLE IF NOT EXISTS VokatraNohanina(
   );
   
     `);
-    console.log('Tables créées avec succès');
-    alert('Tables créées avec succès');
+   // console.log('Tables créées avec succès');
+  //  alert('Tables créées avec succès');
   };
 
   // Appeler la fonction pour créer les tables
@@ -242,7 +240,7 @@ const saveDataToTable = async (tableName, data) => {
   try {
     const result = await db.runAsync(sql, ...values);
     console.log(`Données enregistrées avec succès dans la table ${tableName}`);
-    alert(`Données enregistrées avec succès dans la table ${tableName}`);
+  //  alert(`Données enregistrées avec succès dans la table ${tableName}`);
     return result;
   } catch (error) {
     console.error(`Erreur lors de l'enregistrement des données dans la table ${tableName}:`, error);
@@ -261,7 +259,7 @@ const saveDataToMonopoly = async () => {
       await tx.executeSqlAsync(sql);
     });
     console.log(`Données enregistrées avec succès dans la table Monopoly`);
-    alert(`Données enregistrées avec succès dans la table Monopoly`);
+  //  alert(`Données enregistrées avec succès dans la table Monopoly`);
     return result;
   } catch (error) {
     console.error(`Erreur lors de l'enregistrement des données dans la table Monopoly:`, error);
@@ -283,7 +281,7 @@ const saveDataKey = async (tableName, data) => {
   try {
     const result = await db.runAsync(sql, ...values);
     console.log(`Données enregistrées avec succès dans la table ${tableName}`);
-    alert(`Données enregistrées avec succès dans la table ${tableName}`);
+ //   alert(`Données enregistrées avec succès dans la table ${tableName}`);
     return result;
   } catch (error) {
     console.error(`Erreur lors de l'enregistrement des données dans la table ${tableName}:`, error);
@@ -375,7 +373,7 @@ const insertDonneexel = async (data,table,id) => {
     }
 
     console.log(`Les données ont été insérées avec succès.`);
-    alert(`Les données ont été insérées avec succès.`);
+ //   alert(`Les données ont été insérées avec succès.`);
   } catch (error) {
     console.error(`Erreur lors de l'insertion des données:`, error);
     alert(`Erreur lors de l'insertion des données: ` + error.message);
@@ -410,7 +408,7 @@ async function insertTotaly(data, nomtable,mpamokatraid) {
         VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         values.join(',') // Spécifiez ',' comme délimiteur
       );
-      alert(`Les données ont été insérées avec succès.`,nomtable);
+    //  alert(`Les données ont été insérées avec succès.`,nomtable);
     } catch (error) {
       console.error("Erreur lors de l'insertion des données:", error);
     }
@@ -471,7 +469,7 @@ const insertDonneFandanina = async (data,table,mpamokatraid) => {
     }
 
     console.log(`Les données ont été insérées avec succès.`);
-    alert(`Les données ont été insérées avec succès.`);
+ //   alert(`Les données ont été insérées avec succès.`);
   } catch (error) {
     console.error(`Erreur lors de l'insertion des données ${table}:`, error);
     alert(`Erreur lors de l'insertion des données: ` + error.message);
@@ -510,7 +508,7 @@ const insertdonnetable = async (data,table,mpamokatraid) => {
     }
 
     console.log(`Les données ont été insérées avec succès.`);
-    alert(`Les données ont été insérées avec succès.`);
+  //  alert(`Les données ont été insérées avec succès.`);
   } catch (error) {
     console.error(`Erreur lors de l'insertion des données:`, error);
     alert(`Erreur lors de l'insertion des données ${table}: ` + error.message);
